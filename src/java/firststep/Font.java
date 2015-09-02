@@ -1,14 +1,12 @@
 package firststep;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import firststep.internal.NVG;
 
 public class Font {
-
-	private static HashMap<Integer, WeakReference<Font>> allFonts = new HashMap<>();
-	
 	@SuppressWarnings("serial")
 	class FontExistsException extends Exception {
 		public final int fontId;
@@ -16,24 +14,31 @@ public class Font {
 			this.fontId = fontId;
 		}
 	}
-	
-	int id;
 
+	private static HashMap<String, WeakReference<Font>> allFonts = new HashMap<>();
+	int id;
 	private Canvas canvas;
 
-	Font(Canvas cnv, String name, String path) throws FontExistsException {
+	Font(Canvas cnv, String name, String path) throws FontExistsException, IOException {
 		canvas = cnv;
+		if (allFonts.containsKey(name)) throw new FontExistsException(id);
 		id = NVG.createFont(canvas.nanoVGContext, name, path);
-		if (allFonts.containsKey(id)) throw new FontExistsException(id);
-		allFonts.put(id, new WeakReference<>(this));
+		allFonts.put(name, new WeakReference<>(this));
 	}
-	
+
+	Font(Canvas cnv, String name, byte[] data) throws FontExistsException {
+		canvas = cnv;
+		if (allFonts.containsKey(name)) throw new FontExistsException(id);
+		id = NVG.createFontMem(canvas.nanoVGContext, name, data);
+		allFonts.put(name, new WeakReference<>(this));
+	}
+
 	static Font find(Canvas cnv, String name) {
-		return find(NVG.findFont(cnv.nanoVGContext, name));
+		return find(name);
 	}
 	
-	static Font find(int id) {
-		WeakReference<Font> f = allFonts.get(id);
+	static Font find(String name) {
+		WeakReference<Font> f = allFonts.get(name);
 		if (f != null) {
 			return f.get();
 		} else {

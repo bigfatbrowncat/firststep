@@ -223,11 +223,11 @@ public class Canvas {
 		return new Image(this, filename, imageFlags);
 	}
 
-	public Image createImageMem(InputStream is, Image.Flags imageFlags) throws IOException {
+	public Image createImage(InputStream is, Image.Flags imageFlags) throws IOException {
 		return new Image(this, JavaTools.convertSteamToByteArray(is, 65536), imageFlags);
 	}
 
-	public Image createImageMem(byte[] data, Image.Flags imageFlags) {
+	public Image createImage(byte[] data, Image.Flags imageFlags) {
 		return new Image(this, data, imageFlags);
 	}
 	
@@ -275,14 +275,30 @@ public class Canvas {
 		NVG.text(nanoVGContext, x, y, message);
 	}
 	
-	public Font createFont(String name, String path) {
+	public Font createOrFindFont(String name, String path) throws IOException {
 		try {
 			return new Font(this, name, path);
 		} catch (Font.FontExistsException e) {
-			return Font.find(e.fontId);
+			return Font.find(name);
 		}
 	}
 	
+	public Font createOrFindFont(String name, byte[] data) {
+		try {
+			return new Font(this, name, data);
+		} catch (Font.FontExistsException e) {
+			return Font.find(name);
+		}
+	}
+
+	public Font createOrFindFont(String name, InputStream is) throws IOException {
+		try {
+			return new Font(this, name, JavaTools.convertSteamToByteArray(is, 65536));
+		} catch (Font.FontExistsException e) {
+			return Font.find(name);
+		}
+	}
+
 	public void rotate(float angle) {
 		NVG.rotate(nanoVGContext, angle);
 	}

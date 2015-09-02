@@ -398,6 +398,26 @@ JNIEXPORT jint JNICALL Java_firststep_internal_NVG_createFont
 	return r;
 }
 
+JNIEXPORT int JNICALL Java_firststep_internal_NVG_createFontMem
+  (JNIEnv *e, jclass c, jlong ctx, jstring jname, jbyteArray jdata)
+{
+	checkJO(jname,"\ncreateFontMem was passed a NULL name string\n");
+	checkJO(jdata,"\ncreateFontMem was passed a NULL data\n");
+	const char *name = (*e)->GetStringUTFChars(e, jname, 0);
+	int ndata = (*e)->GetArrayLength(e, jdata);
+	unsigned char* data = (unsigned char*)(*e)->GetByteArrayElements(e, jdata, NULL);
+
+	int r;
+	unsigned char* fData = (unsigned char*)malloc(ndata);
+	memcpy(fData, data, ndata);
+	r = nvgCreateFontMem((NVGcontext*)ctx, name, fData, ndata, TRUE);
+
+    (*e)->ReleaseByteArrayElements(e, jdata, (jbyte*)data, 0);
+    (*e)->ReleaseStringUTFChars(e, jname, name);
+	return r;
+}
+
+
 JNIEXPORT void JNICALL Java_firststep_internal_NVG_rotate
   (JNIEnv *e, jclass c, jlong ctx, jfloat angle)
 {

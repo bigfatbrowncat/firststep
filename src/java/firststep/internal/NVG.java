@@ -344,7 +344,9 @@ public class NVG {
 
 	public static native float text(long ctx, float x, float y, String message);
 
-	public static native int createFont(long ctx, String name, String path);
+	public static native int createFont(long ctx, String name, String path) throws IOException;
+
+	public static native int createFontMem(long ctx, String name, byte[] data);
 
 	public static native void rotate(long ctx, float angle);
 
