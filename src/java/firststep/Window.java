@@ -7,12 +7,13 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import firststep.Framebuffer.DrawListener;
 import firststep.internal.GL3W;
 import firststep.internal.GLFW;
 import firststep.internal.OS;
 import firststep.internal.GLFW.Callback;
 
-public class Window {
+public class Window implements DrawListener {
 
 	/**
 	 * Mouse buttons
@@ -466,7 +467,7 @@ public class Window {
 		getLogger().log(Level.INFO, "GL version: " + GL3W.getGLVersionMajor() + "." + GL3W.getGLVersionMinor());
 		getLogger().log(Level.INFO, "GLSL version: " + GL3W.getGLSLVersionMajor() + "." + GL3W.getGLSLVersionMinor());
 
-		this.background = background;
+		//this.background = background;
 		this.width = width;
 		this.height = height;
 
@@ -478,18 +479,19 @@ public class Window {
 	}
 	
 	private void internalDraw() {
-		beforeFrame();
+		GLFW.makeContextCurrent(glfwWindow);
+		DrawingQueue queue = new DrawingQueue();
+		beforeFrame(queue);
+		queue.append(rootFramebuffer);
 		
-		int fbWidth = width;	// TODO FramebufferSize
+		/*int fbWidth = width;	// TODO FramebufferSize
 		int fbHeight = height;	// TODO FramebufferSize
 		
 		// Calculate pixel ration for hi-dpi devices.
-		float pxRatio = (float)fbWidth / (float)width;
-
-		GLFW.makeContextCurrent(glfwWindow);
-		rootFramebuffer.setBackground(background);
-		rootFramebuffer.setDrawFlag();
-		rootFramebuffer.draw(canvas);
+		float pxRatio = (float)fbWidth / (float)width;*/
+		for (Framebuffer fb : queue.getFramebuffers()) {
+			fb.draw(canvas);
+		}
 
         GLFW.swapBuffers(glfwWindow);
 	}
@@ -501,6 +503,8 @@ public class Window {
 	public void internalWindowSize(int width, int height) {
 		if (rootFramebuffer == null) {
 			rootFramebuffer = new Framebuffer(canvas, width, height, 0);
+			rootFramebuffer.setDrawListener(this);
+			rootFramebuffer.setBackground(this.background);
 		} else {
 			rootFramebuffer.resize(width, height);
 		}
@@ -530,6 +534,9 @@ public class Window {
 	
 	public void setBackground(Color background) {
 		this.background = background;
+		if (rootFramebuffer != null) {
+			this.rootFramebuffer.setBackground(background);
+		}
 	}
 	
 	public int getWidth() {
@@ -544,17 +551,13 @@ public class Window {
 		internalWindowSize(width, height);
 	}
 	
-	public Framebuffer getMainFramebuffer() {
-		return rootFramebuffer;
-	}
-	
 	public Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
 		return canvas.createFramebuffer(width, height, imageFlags);
 	}
 	
 	// User events
 	
-	protected void beforeFrame() {
+	protected void beforeFrame(DrawingQueue queue) {
 		
 	}
 	
@@ -576,6 +579,11 @@ public class Window {
 	
 	protected void cursorPos(double x, double y) {
 
+	}
+
+	@Override
+	public void draw(Canvas cnv) {
+		
 	}
 
 }

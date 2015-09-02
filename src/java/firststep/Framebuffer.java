@@ -1,8 +1,5 @@
 package firststep;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import firststep.internal.GL3W;
 import firststep.internal.NVG;
 
@@ -21,9 +18,6 @@ public class Framebuffer {
 	private boolean isDeleted;
 	
 	private DrawListener drawListener;
-	private Set<Framebuffer> dependencies = new HashSet<>();
-	
-	private boolean drawFlag = false;
 	
 	Framebuffer(Canvas cnv, int width, int height, Image.Flags imageFlags) {
 		canvas = cnv;
@@ -85,9 +79,10 @@ public class Framebuffer {
 
 		NVG.bindFramebuffer(id);
 		GL3W.glViewport(0, 0, fboSize.getX(), fboSize.getY());
-		GL3W.glClearColor(background.getRed(), background.getGreen(), background.getBlue(), background.getAlpha());
-		
-		GL3W.glClear(GL3W.GL_COLOR_BUFFER_BIT | GL3W.GL_STENCIL_BUFFER_BIT | GL3W.GL_DEPTH_BUFFER_BIT);
+		if (background != null) {
+			GL3W.glClearColor(background.getRed(), background.getGreen(), background.getBlue(), background.getAlpha());
+			GL3W.glClear(GL3W.GL_COLOR_BUFFER_BIT | GL3W.GL_STENCIL_BUFFER_BIT | GL3W.GL_DEPTH_BUFFER_BIT);
+		}
 		NVG.beginFrame(canvas.nanoVGContext, winWidth, winHeight, pxRatio);
 	}
 	
@@ -96,41 +91,18 @@ public class Framebuffer {
 		NVG.bindFramebuffer(0);
 	}
 		
-	void setDrawFlag() {
-		drawFlag = true;
-		for (Framebuffer fb : dependencies) {
-			fb.setDrawFlag();
-		}	
-	}
-	
 	void draw(Canvas canvas) {
-		if (drawListener != null && drawFlag) {
-			for (Framebuffer fb : dependencies) {
-				fb.draw(canvas);
-			}
+		if (drawListener != null) {
 			beginDrawing(1.0f); // TODO: fix
 			drawListener.draw(canvas);
 			endDrawing();
-			drawFlag = false;
 		}
 	}
 
 	public void setDrawListener(DrawListener drawListener) {
 		this.drawListener = drawListener;
 	}
-	
-	public void addDependency(Framebuffer dep) {
-		dependencies.add(dep);
-	}
-	
-	public void removeDependency(Framebuffer dep) {
-		dependencies.remove(dep);
-	}
-	
-	public void clearDependencies() {
-		dependencies.clear();
-	}
-	
+		
 	void setBackground(Color background) {
 		this.background = background;
 	}
