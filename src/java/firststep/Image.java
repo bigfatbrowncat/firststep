@@ -104,30 +104,17 @@ public class Image {
 		if (id == 0) {
 			throw new IOException("Can't load image from file " + filename);
 		}
-		canvas.allImages.put(id, new WeakReference<>(this));
 	}
 	
 	Image(Canvas cnv, byte[] data, Flags imageFlags) {
 		canvas = cnv;
 		id = NVG.createImageMem(canvas.nanoVGContext, data, imageFlags.toFlags());
-		canvas.allImages.put(id, new WeakReference<>(this));
 	}
 	
 	Image(Canvas cnv, int id, boolean shouldBeDeleted) {
 		canvas = cnv;
 		this.id = id;
 		this.shouldBeDeleted = shouldBeDeleted;
-		canvas.allImages.put(id, new WeakReference<>(this));
-	}
-	
-	static Image forId(Canvas cnv, int id) {
-		WeakReference<Image> ref = cnv.allImages.get(id);
-		if (ref != null) {
-			Image img = ref.get();
-			return img;
-		} else {
-			return null;
-		}
 	}
 	
 	public IntXY getSize() {
@@ -141,7 +128,6 @@ public class Image {
 			if (shouldBeDeleted) {
 				NVG.deleteImage(canvas.nanoVGContext, id);
 			}
-			canvas.allImages.remove(id);
 			isDeleted = true;
 		}
 	}

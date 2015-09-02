@@ -55,11 +55,15 @@ public class Framebuffer {
 		return isDeleted;
 	}
 	
+	
+	Image image;
 	public Image getImage() {
 		if (id != 0) {
-			int imgId = NVG.getImageFromFramebuffer(id);
-			Image img = Image.forId(canvas, imgId);
-			return img != null ? img : new Image(canvas, imgId, false);
+			if (image == null) {
+				int imgId = NVG.getImageFromFramebuffer(id);
+				image = new Image(canvas, imgId, false);
+			}
+			return image;
 		} else {
 			return null;
 		}

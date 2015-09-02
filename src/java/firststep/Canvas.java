@@ -13,8 +13,6 @@ import firststep.internal.NVG;
 
 public class Canvas {
 	
-	HashMap<Integer, WeakReference<Image>> allImages = new HashMap<>();
-
 	/**
 	 * Line caps
 	 */
