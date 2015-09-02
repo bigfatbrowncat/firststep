@@ -1,7 +1,6 @@
 package firststep;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -111,7 +110,12 @@ public class Image {
 		id = NVG.createImageMem(canvas.nanoVGContext, data, imageFlags.toFlags());
 	}
 	
-	Image(Canvas cnv, int id, boolean shouldBeDeleted) {
+	static Image forFramebuffer(Canvas cnv, long fbId) {
+		int imgId = NVG.getImageFromFramebuffer(fbId);
+		return new Image(cnv, imgId, false);
+	}
+	
+	private Image(Canvas cnv, int id, boolean shouldBeDeleted) {
 		canvas = cnv;
 		this.id = id;
 		this.shouldBeDeleted = shouldBeDeleted;

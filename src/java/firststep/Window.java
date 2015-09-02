@@ -7,13 +7,12 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import firststep.Framebuffer.DrawListener;
 import firststep.internal.GL3W;
 import firststep.internal.GLFW;
 import firststep.internal.OS;
 import firststep.internal.GLFW.Callback;
 
-public class Window implements DrawListener {
+public class Window {
 
 	/**
 	 * Mouse buttons
@@ -419,7 +418,6 @@ public class Window implements DrawListener {
 	}
 
 	private long glfwWindow; 
-	private Canvas canvas;
 	private Color background = Color.fromRGBA(0f, 0f, 0f, 1f);
 	private int width, height;
 	private boolean justCreated;
@@ -471,8 +469,6 @@ public class Window implements DrawListener {
 		this.width = width;
 		this.height = height;
 
-		canvas = new Canvas(this);
-		
 		openedWindows.put(glfwWindow, this);
 		justCreated = true;
 		
@@ -480,18 +476,13 @@ public class Window implements DrawListener {
 	
 	private void internalDraw() {
 		GLFW.makeContextCurrent(glfwWindow);
-		DrawingQueue queue = new DrawingQueue();
-		beforeFrame(queue);
-		queue.append(rootFramebuffer);
+		beforeFrame();
 		
 		/*int fbWidth = width;	// TODO FramebufferSize
 		int fbHeight = height;	// TODO FramebufferSize
 		
 		// Calculate pixel ration for hi-dpi devices.
 		float pxRatio = (float)fbWidth / (float)width;*/
-		for (Framebuffer fb : queue.getFramebuffers()) {
-			fb.draw(canvas);
-		}
 
         GLFW.swapBuffers(glfwWindow);
 	}
@@ -502,8 +493,7 @@ public class Window implements DrawListener {
 	
 	public void internalWindowSize(int width, int height) {
 		if (rootFramebuffer == null) {
-			rootFramebuffer = new Framebuffer(canvas, width, height, 0);
-			rootFramebuffer.setDrawListener(this);
+			rootFramebuffer = new Framebuffer(width, height, 0);
 			rootFramebuffer.setBackground(this.background);
 		} else {
 			rootFramebuffer.resize(width, height);
@@ -551,13 +541,17 @@ public class Window implements DrawListener {
 		internalWindowSize(width, height);
 	}
 	
+	protected Framebuffer getRootFramebuffer() {
+		return rootFramebuffer;
+	}
+	
 	public Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
-		return canvas.createFramebuffer(width, height, imageFlags);
+		return rootFramebuffer.createFramebuffer(width, height, imageFlags);
 	}
 	
 	// User events
 	
-	protected void beforeFrame(DrawingQueue queue) {
+	protected void beforeFrame() {
 		
 	}
 	
@@ -579,11 +573,6 @@ public class Window implements DrawListener {
 	
 	protected void cursorPos(double x, double y) {
 
-	}
-
-	@Override
-	public void draw(Canvas cnv) {
-		
 	}
 
 }

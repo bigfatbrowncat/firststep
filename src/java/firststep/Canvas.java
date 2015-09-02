@@ -2,8 +2,6 @@ package firststep;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -117,10 +115,9 @@ public class Canvas {
 		return Logger.getLogger(Window.class.getName(), null);
 	}
 
-	long nanoVGContext;
+	static long nanoVGContext;
 	
-	Canvas(Window window) {
-		window.makeContextCurrent();
+	static {
 		nanoVGContext = NVG.create(firststep.internal.NVG.NVG_ANTIALIAS | firststep.internal.NVG.NVG_STENCIL_STROKES | firststep.internal.NVG.NVG_DEBUG);
 		if (nanoVGContext == 0) {
 			GLFW.terminate();
@@ -230,7 +227,7 @@ public class Canvas {
 	}
 	
 	public Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
-		return new Framebuffer(this, width, height, imageFlags);
+		return new Framebuffer(width, height, imageFlags);
 	}
 	
 	public void roundedRect(float x, float y, float width, float height, float r) {
