@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import firststep.internal.NVG;
 
-public class Image {
+public class Image implements Deletable {
 	
 	/**
 	 * Image construction flags
@@ -138,7 +138,7 @@ public class Image {
 	
 	@Override
 	protected void finalize() throws Throwable {
-		delete();
+		Window.issueDelete(this);
 		super.finalize();
 	}
 	

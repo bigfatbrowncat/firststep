@@ -1,9 +1,11 @@
 package firststep;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -382,9 +384,25 @@ public class Window {
 		return Logger.getLogger(Window.class.getName(), null);
 	}
 	
+	private static List<Deletable> orderedToDelete = new ArrayList<Deletable>();
+	public static void issueDelete(Deletable deletable) {
+		synchronized (orderedToDelete) {
+			orderedToDelete.add(deletable);
+		}
+	}
+	private static void deleteOrdered() {
+		synchronized (orderedToDelete) {
+			for (Deletable d : orderedToDelete) {
+				d.delete();
+			}
+			orderedToDelete.clear();
+		}		
+	}
+	
 	public static void loop(float fpsMax) {
 		while (!openedWindows.isEmpty()) {
 			double t1 = GLFW.getTime();
+			deleteOrdered();
 			
 			for (Window window : openedWindows.values()) {
 				if (window.justCreated) {
@@ -478,7 +496,10 @@ public class Window {
 	
 	private void internalDraw() {
 		GLFW.makeContextCurrent(glfwWindow);
+		
+		rootFramebuffer.beginDrawing();
 		frame();
+		rootFramebuffer.endDrawing();
 		
 		/*int fbWidth = width;	// TODO FramebufferSize
 		int fbHeight = height;	// TODO FramebufferSize

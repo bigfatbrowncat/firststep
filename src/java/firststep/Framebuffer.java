@@ -1,9 +1,12 @@
 package firststep;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import firststep.internal.GL3W;
 import firststep.internal.NVG;
 
-public class Framebuffer extends Canvas {
+public class Framebuffer extends Canvas implements Deletable {
 	
 	private long id;
 	private int width, height;
@@ -18,6 +21,7 @@ public class Framebuffer extends Canvas {
 		this.imageFlags = imageFlags;
 
 		id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
+		if (id == 0) throw new RuntimeException("Can't create a framebuffer");
 		image = Image.forFramebuffer(this, id);
 	}
 	
@@ -28,20 +32,20 @@ public class Framebuffer extends Canvas {
 	}
 	
 	public void resize(int newWidth, int newHeight) {
-		if (id == 0) {
-			this.width = newWidth;
-			this.height = newHeight;
-		} else {
+		this.width = newWidth;
+		this.height = newHeight;
+
+		if (id != 0) {
 			NVG.deleteFramebuffer(id);
 			id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
+			if (id == 0) throw new RuntimeException("Can't recreate a framebuffer");
 			image = Image.forFramebuffer(this, id);
-
 		}
 	}
 	
 	public synchronized void delete() {
 		if (!isDeleted) {
-			NVG.deleteFramebuffer(id);
+			if (id != 0) NVG.deleteFramebuffer(id);
 			isDeleted = true;
 		}
 	}
@@ -56,14 +60,20 @@ public class Framebuffer extends Canvas {
 	}
 	
 	private float pxRatio = 1.0f;
+	
+	private static List<Framebuffer> framebufferStack = new ArrayList<Framebuffer>();
 	public void beginDrawing() {
-		IntXY fboSize;
-//		if (id == 0) {
-			// TODO Implement getFramebufferSize
-			fboSize = new IntXY(width, height);
-//		} else {
-//			fboSize = getImage().getSize();
-//		}
+		if (framebufferStack.contains(this)) {
+			throw new RuntimeException("Trying to call beginDrawing() on a framebuffer that has already been opened for drawing");
+		}
+		
+		// Closing the current framebuffer
+		if (framebufferStack.size() > 0) {
+			NVG.endFrame(nanoVGContext);
+		}
+		
+		// Opening the new one
+		IntXY fboSize = new IntXY(width, height);
 
 		int winWidth = (int)(fboSize.getX() / pxRatio);
 		int winHeight = (int)(fboSize.getY() / pxRatio);
@@ -75,11 +85,28 @@ public class Framebuffer extends Canvas {
 			GL3W.glClear(GL3W.GL_COLOR_BUFFER_BIT | GL3W.GL_STENCIL_BUFFER_BIT | GL3W.GL_DEPTH_BUFFER_BIT);
 		}
 		NVG.beginFrame(nanoVGContext, winWidth, winHeight, pxRatio);
+		framebufferStack.add(this);
 	}
 	
 	public void endDrawing() {
+		if (framebufferStack.get(framebufferStack.size() - 1) != this) {
+			throw new RuntimeException("Trying to call endDrawing() on a wrong framebuffer");
+		}
 		NVG.endFrame(nanoVGContext);
-		NVG.bindFramebuffer(0);
+		framebufferStack.remove(framebufferStack.size() - 1);
+		
+		// Restoring the previous framebuffer
+		if (framebufferStack.size() > 0) {
+			Framebuffer prev = framebufferStack.get(framebufferStack.size() - 1);
+			NVG.bindFramebuffer(prev.id);
+			IntXY fboSize = new IntXY(prev.width, prev.height);
+			if (prev.id == 0) {
+				GL3W.glViewport(0, 0, fboSize.getX(), fboSize.getY());
+			}
+			int winWidth = (int)(fboSize.getX() / pxRatio);
+			int winHeight = (int)(fboSize.getY() / pxRatio);
+			NVG.beginFrame(nanoVGContext, winWidth, winHeight, pxRatio);
+		}
 	}
 	
 	public void setBackground(Color background) {
@@ -88,7 +115,7 @@ public class Framebuffer extends Canvas {
 	
 	@Override
 	protected void finalize() throws Throwable {
-		delete();
+		Window.issueDelete(this);
 		super.finalize();
 	}
 }
