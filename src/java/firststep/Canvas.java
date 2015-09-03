@@ -226,9 +226,9 @@ public class Canvas {
 		return new Image(this, data, imageFlags);
 	}
 	
-	public Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
+	/*public static Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
 		return new Framebuffer(width, height, imageFlags);
-	}
+	}*/
 	
 	public void roundedRect(float x, float y, float width, float height, float r) {
 		NVG.roundedRect(nanoVGContext, x, y, width, height, r);

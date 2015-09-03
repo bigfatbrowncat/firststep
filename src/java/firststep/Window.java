@@ -445,6 +445,8 @@ public class Window {
 			GLFW.windowHint(GLFW.CONTEXT_VERSION_MINOR, 0);			
 		}
 
+		this.background = background;
+		
 		glfwWindow = GLFW.createWindow(width, height, title, 0, 0);
 		if (glfwWindow == 0) {
 			GLFW.terminate();
@@ -476,7 +478,7 @@ public class Window {
 	
 	private void internalDraw() {
 		GLFW.makeContextCurrent(glfwWindow);
-		beforeFrame();
+		frame();
 		
 		/*int fbWidth = width;	// TODO FramebufferSize
 		int fbHeight = height;	// TODO FramebufferSize
@@ -544,14 +546,10 @@ public class Window {
 	protected Framebuffer getRootFramebuffer() {
 		return rootFramebuffer;
 	}
-	
-	public Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
-		return rootFramebuffer.createFramebuffer(width, height, imageFlags);
-	}
-	
+		
 	// User events
 	
-	protected void beforeFrame() {
+	protected void frame() {
 		
 	}
 	

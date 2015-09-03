@@ -12,7 +12,7 @@ public class Framebuffer extends Canvas {
 
 	private boolean isDeleted;
 		
-	Framebuffer(int width, int height, Image.Flags imageFlags) {
+	public Framebuffer(int width, int height, Image.Flags imageFlags) {
 		this.width = width;
 		this.height = height;
 		this.imageFlags = imageFlags;

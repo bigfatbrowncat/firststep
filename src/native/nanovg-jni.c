@@ -410,7 +410,7 @@ JNIEXPORT int JNICALL Java_firststep_internal_NVG_createFontMem
 	int r;
 	unsigned char* fData = (unsigned char*)malloc(ndata);
 	memcpy(fData, data, ndata);
-	r = nvgCreateFontMem((NVGcontext*)ctx, name, fData, ndata, TRUE);
+	r = nvgCreateFontMem((NVGcontext*)ctx, name, fData, ndata, 1);
 
     (*e)->ReleaseByteArrayElements(e, jdata, (jbyte*)data, 0);
     (*e)->ReleaseStringUTFChars(e, jname, name);
