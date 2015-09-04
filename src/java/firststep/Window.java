@@ -301,37 +301,32 @@ public class Window {
 		
 		@Override
 		public void windowPos(long window, int x, int y) {
-			// TODO Auto-generated method stub
-			
+			openedWindows.get(window).onPositionChange(x, y);
 		}
 		
 		@Override
 		public void windowIconify(long window, boolean iconified) {
-			// TODO Auto-generated method stub
-			
+			openedWindows.get(window).onIconifiedChange(iconified);
 		}
 		
 		@Override
 		public void windowFocus(long window, boolean focused) {
-			// TODO Auto-generated method stub
-			
+			openedWindows.get(window).onWindowFocusedChange(focused);
 		}
 		
 		@Override
 		public void windowClose(long window) {
-			// TODO Auto-generated method stub
-			
+			openedWindows.get(window).onClose();
 		}
 		
 		@Override
 		public void scroll(long window, double scrollX, double scrollY) {
-			// TODO Auto-generated method stub
-			
+			openedWindows.get(window).onScroll(scrollX, scrollY);
 		}
 		
 		@Override
 		public void mouseButton(long window, int button, int action, int mods) {
-			openedWindows.get(window).mouseButton(MouseButton.fromId(button), MouseButtonState.fromId(action), Modifiers.fromFlags(mods));
+			openedWindows.get(window).onMouseButtonStateChange(MouseButton.fromId(button), MouseButtonState.fromId(action), Modifiers.fromFlags(mods));
 		}
 		
 		@Override
@@ -342,7 +337,7 @@ public class Window {
 		
 		@Override
 		public void key(long window, int key, int scancode, int action, int mods) {
-			openedWindows.get(window).key(Key.fromId(key), scancode, KeyState.fromId(action), Modifiers.fromFlags(mods));
+			openedWindows.get(window).onKeyStateChange(Key.fromId(key), scancode, KeyState.fromId(action), Modifiers.fromFlags(mods));
 		}
 		
 		@Override
@@ -352,18 +347,17 @@ public class Window {
 		
 		@Override
 		public void cursorPos(long window, double x, double y) {
-			openedWindows.get(window).cursorPos(x, y);
+			openedWindows.get(window).onCursorPositionChange(x, y);
 		}
 		
 		@Override
 		public void cursorEnter(long window, boolean entered) {
-			// TODO Auto-generated method stub
-			
+			openedWindows.get(window).onCursorEnter(entered);
 		}
 		
 		@Override
 		public void character(long window, char character) {
-			openedWindows.get(window).character(character);
+			openedWindows.get(window).onCharacterInput(character);
 		}
 	};
 	
@@ -498,7 +492,7 @@ public class Window {
 		GLFW.makeContextCurrent(glfwWindow);
 		
 		rootFramebuffer.beginDrawing();
-		frame();
+		onFrame();
 		rootFramebuffer.endDrawing();
 		
 		/*int fbWidth = width;	// TODO FramebufferSize
@@ -522,13 +516,13 @@ public class Window {
 			rootFramebuffer.resize(width, height);
 		}
 
-		windowSize(width, height);
+		onSizeChange(width, height);
 		this.width = width;
 		this.height = height;
 
 		internalDraw();
 	}
-
+	
 	public void close() {
 		GLFW.setWindowShouldClose(glfwWindow, 1);
 	}
@@ -570,28 +564,52 @@ public class Window {
 		
 	// User events
 	
-	protected void frame() {
+	protected void onFrame() {
 		
 	}
 	
-	protected void windowSize(int width, int height) {
+	protected void onSizeChange(int width, int height) {
 		
 	}
 
-	public void mouseButton(MouseButton button, MouseButtonState state, Modifiers modifiers) {
+	public void onMouseButtonStateChange(MouseButton button, MouseButtonState state, Modifiers modifiers) {
 		
 	}
 	
-	public void key(Key key, int scancode, KeyState state, Modifiers modifiers) {
+	public void onKeyStateChange(Key key, int scancode, KeyState state, Modifiers modifiers) {
 		
 	}
 	
-	public void character(char character) {
+	public void onCharacterInput(char character) {
 		
 	}
 	
-	protected void cursorPos(double x, double y) {
+	protected void onCursorPositionChange(double x, double y) {
 
+	}
+
+	public void onPositionChange(int x, int y) {
+
+	}
+	
+	public void onIconifiedChange(boolean iconified) {
+		
+	}
+	
+	public void onWindowFocusedChange(boolean focused) {
+		
+	}
+	
+	public void onClose() {
+		
+	}
+	
+	public void onScroll(double scrollX, double scrollY) {
+		
+	}
+	
+	public void onCursorEnter(boolean entered) {
+		
 	}
 
 }
