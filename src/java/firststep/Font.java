@@ -1,9 +1,11 @@
 package firststep;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
+import firststep.internal.JavaTools;
 import firststep.internal.NVG;
 
 public class Font {
@@ -17,28 +19,45 @@ public class Font {
 
 	private static HashMap<String, WeakReference<Font>> allFonts = new HashMap<>();
 	int id;
-	private Canvas canvas;
 
-	Font(Canvas cnv, String name, String path) throws FontExistsException, IOException {
-		canvas = cnv;
+	Font(String name, String path) throws FontExistsException, IOException {
 		if (allFonts.containsKey(name)) throw new FontExistsException(id);
-		id = NVG.createFont(canvas.nanoVGContext, name, path);
+		id = NVG.createFont(Canvas.nanoVGContext, name, path);
 		if (id == -1) throw new RuntimeException("Failed to load font " + name);
 		allFonts.put(name, new WeakReference<>(this));
 	}
 
-	Font(Canvas cnv, String name, byte[] data) throws FontExistsException {
-		canvas = cnv;
+	Font(String name, byte[] data) throws FontExistsException {
 		if (allFonts.containsKey(name)) throw new FontExistsException(id);
-		id = NVG.createFontMem(canvas.nanoVGContext, name, data);
+		id = NVG.createFontMem(Canvas.nanoVGContext, name, data);
 		if (id == -1) throw new RuntimeException("Failed to load font " + name);
 		allFonts.put(name, new WeakReference<>(this));
-	}
-
-	static Font find(Canvas cnv, String name) {
-		return find(name);
 	}
 	
+	public static Font createOrFindFont(String name, String path) throws IOException {
+		try {
+			return new Font(name, path);
+		} catch (Font.FontExistsException e) {
+			return Font.find(name);
+		}
+	}
+
+	public static Font createOrFindFont(String name, byte[] data) {
+		try {
+			return new Font(name, data);
+		} catch (Font.FontExistsException e) {
+			return Font.find(name);
+		}
+	}
+
+	public static Font createOrFindFont(String name, InputStream is) throws IOException {
+		try {
+			return new Font(name, JavaTools.convertSteamToByteArray(is, 65536));
+		} catch (Font.FontExistsException e) {
+			return Font.find(name);
+		}
+	}
+
 	static Font find(String name) {
 		WeakReference<Font> f = allFonts.get(name);
 		if (f != null) {

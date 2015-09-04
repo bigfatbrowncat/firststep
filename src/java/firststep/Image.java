@@ -1,9 +1,11 @@
 package firststep;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.Iterator;
 
+import firststep.internal.JavaTools;
 import firststep.internal.NVG;
 
 public class Image implements Deletable {
@@ -93,44 +95,44 @@ public class Image implements Deletable {
 	
 	int id;
 
-	private Canvas canvas;
 	private boolean isDeleted;
 	private boolean shouldBeDeleted;
 	
-	Image(Canvas cnv, String filename, Flags imageFlags) throws IOException {
-		canvas = cnv;
-		id = NVG.createImage(canvas.nanoVGContext, filename, imageFlags.toFlags());
+	public Image(String filename, Flags imageFlags) throws IOException {
+		id = NVG.createImage(Canvas.nanoVGContext, filename, imageFlags.toFlags());
 		if (id == 0) {
 			throw new IOException("Can't load image from file " + filename);
 		}
 	}
 	
-	Image(Canvas cnv, byte[] data, Flags imageFlags) {
-		canvas = cnv;
-		id = NVG.createImageMem(canvas.nanoVGContext, data, imageFlags.toFlags());
+	public Image(byte[] data, Flags imageFlags) {
+		id = NVG.createImageMem(Canvas.nanoVGContext, data, imageFlags.toFlags());
 	}
 	
-	static Image forFramebuffer(Canvas cnv, long fbId) {
+	public Image(InputStream is, Flags imageFlags) throws IOException {
+		id = NVG.createImageMem(Canvas.nanoVGContext, JavaTools.convertSteamToByteArray(is, 65536), imageFlags.toFlags());
+	}
+	
+	static Image forFramebuffer(long fbId) {
 		int imgId = NVG.getImageFromFramebuffer(fbId);
-		return new Image(cnv, imgId, false);
+		return new Image(imgId, false);
 	}
 	
-	private Image(Canvas cnv, int id, boolean shouldBeDeleted) {
-		canvas = cnv;
+	private Image(int id, boolean shouldBeDeleted) {
 		this.id = id;
 		this.shouldBeDeleted = shouldBeDeleted;
 	}
 	
 	public IntXY getSize() {
 		int[] dims = new int[2];
-		NVG.imageSize(canvas.nanoVGContext, id, dims);
+		NVG.imageSize(Canvas.nanoVGContext, id, dims);
 		return new IntXY(dims[0], dims[1]);
 	}
 	
 	public void delete() {
 		if (!isDeleted) {
 			if (shouldBeDeleted) {
-				NVG.deleteImage(canvas.nanoVGContext, id);
+				NVG.deleteImage(Canvas.nanoVGContext, id);
 			}
 			isDeleted = true;
 		}

@@ -22,7 +22,7 @@ public class Framebuffer extends Canvas implements Deletable {
 
 		id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
 		if (id == 0) throw new RuntimeException("Can't create a framebuffer");
-		image = Image.forFramebuffer(this, id);
+		image = Image.forFramebuffer(id);
 	}
 	
 	Framebuffer(int width, int height, long id) {
@@ -39,7 +39,7 @@ public class Framebuffer extends Canvas implements Deletable {
 			NVG.deleteFramebuffer(id);
 			id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
 			if (id == 0) throw new RuntimeException("Can't recreate a framebuffer");
-			image = Image.forFramebuffer(this, id);
+			image = Image.forFramebuffer(id);
 		}
 	}
 	

@@ -1,12 +1,9 @@
 package firststep;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import firststep.internal.GLFW;
-import firststep.internal.JavaTools;
 import firststep.internal.NVG;
 
 public class Canvas {
@@ -214,17 +211,17 @@ public class Canvas {
 		NVG.circle(nanoVGContext, x, y, r);
 	}
 	
-	public Image createImage(String filename, Image.Flags imageFlags) throws IOException {
+/*	public Image createImage(String filename, Image.Flags imageFlags) throws IOException {
 		return new Image(this, filename, imageFlags);
-	}
+	}*/
 
-	public Image createImage(InputStream is, Image.Flags imageFlags) throws IOException {
+/*	public Image createImage(InputStream is, Image.Flags imageFlags) throws IOException {
 		return new Image(this, JavaTools.convertSteamToByteArray(is, 65536), imageFlags);
-	}
+	}*/
 
-	public Image createImage(byte[] data, Image.Flags imageFlags) {
+/*	public Image createImage(byte[] data, Image.Flags imageFlags) {
 		return new Image(this, data, imageFlags);
-	}
+	}*/
 	
 	/*public static Framebuffer createFramebuffer(int width, int height, Image.Flags imageFlags) {
 		return new Framebuffer(width, height, imageFlags);
@@ -268,30 +265,6 @@ public class Canvas {
 	
 	public void text(float x, float y, String message) {
 		NVG.text(nanoVGContext, x, y, message);
-	}
-	
-	public Font createOrFindFont(String name, String path) throws IOException {
-		try {
-			return new Font(this, name, path);
-		} catch (Font.FontExistsException e) {
-			return Font.find(name);
-		}
-	}
-	
-	public Font createOrFindFont(String name, byte[] data) {
-		try {
-			return new Font(this, name, data);
-		} catch (Font.FontExistsException e) {
-			return Font.find(name);
-		}
-	}
-
-	public Font createOrFindFont(String name, InputStream is) throws IOException {
-		try {
-			return new Font(this, name, JavaTools.convertSteamToByteArray(is, 65536));
-		} catch (Font.FontExistsException e) {
-			return Font.find(name);
-		}
 	}
 
 	public void rotate(float angle) {
@@ -364,10 +337,6 @@ public class Canvas {
 		NVG.textLineHeight(nanoVGContext, lineHeight);
 	}
 
-	public Font findFont(String name) {
-		return Font.find(this, name);
-	}
-	
 	public void fontFace(Font font) {
 		NVG.fontFaceId(nanoVGContext, font.id);
 	}
