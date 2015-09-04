@@ -23,6 +23,7 @@ public class Font {
 		canvas = cnv;
 		if (allFonts.containsKey(name)) throw new FontExistsException(id);
 		id = NVG.createFont(canvas.nanoVGContext, name, path);
+		if (id == -1) throw new RuntimeException("Failed to load font " + name);
 		allFonts.put(name, new WeakReference<>(this));
 	}
 
@@ -30,6 +31,7 @@ public class Font {
 		canvas = cnv;
 		if (allFonts.containsKey(name)) throw new FontExistsException(id);
 		id = NVG.createFontMem(canvas.nanoVGContext, name, data);
+		if (id == -1) throw new RuntimeException("Failed to load font " + name);
 		allFonts.put(name, new WeakReference<>(this));
 	}
 
