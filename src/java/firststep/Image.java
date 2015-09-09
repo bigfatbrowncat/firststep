@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.Iterator;
 
+import firststep.contracts.Deletable;
 import firststep.internal.JavaTools;
 import firststep.internal.NVG;
 

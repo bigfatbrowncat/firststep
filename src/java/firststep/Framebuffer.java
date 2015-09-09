@@ -3,6 +3,7 @@ package firststep;
 import java.util.ArrayList;
 import java.util.List;
 
+import firststep.contracts.Deletable;
 import firststep.internal.GL3W;
 import firststep.internal.NVG;
 
@@ -132,6 +133,14 @@ public class Framebuffer extends Canvas implements Deletable {
 			int winHeight = (int)(fboSize.getY() / pxRatio);
 			NVG.beginFrame(nanoVGContext, winWidth, winHeight, pxRatio);
 		}
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
 	}
 	
 	public void setBackground(Color background) {

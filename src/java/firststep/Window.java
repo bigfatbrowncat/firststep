@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import firststep.contracts.Deletable;
 import firststep.internal.GL3W;
 import firststep.internal.GLFW;
 import firststep.internal.OS;
