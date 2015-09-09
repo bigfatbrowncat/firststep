@@ -88,7 +88,32 @@ public class Framebuffer extends Canvas implements Deletable {
 		framebufferStack.add(this);
 	}
 	
+	protected void clearDrawingStack() {
+		if (framebufferStack.size() > 0) {
+			NVG.endFrame(nanoVGContext);
+			framebufferStack.clear();
+		}
+	}
+	
+	protected void checkStackClear() {
+		if (framebufferStack.size() > 0) {
+			NVG.endFrame(nanoVGContext);
+			int fbs = framebufferStack.size();
+			if (fbs > 1) {
+				framebufferStack.clear();
+				throw new RuntimeException("Drawing stack isn't clear. " + fbs + " endDrawing() calls missing");
+			} else {
+				framebufferStack.clear();
+				throw new RuntimeException("Drawing stack isn't clear. An endDrawing() call missing");
+			}
+		}
+	}
+	
 	public void endDrawing() {
+		if (framebufferStack.size() == 0) {
+			throw new RuntimeException("Trying to call endDrawing() out of the drawing stack");
+		}
+		
 		if (framebufferStack.get(framebufferStack.size() - 1) != this) {
 			throw new RuntimeException("Trying to call endDrawing() on a wrong framebuffer");
 		}

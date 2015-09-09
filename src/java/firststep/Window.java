@@ -14,7 +14,7 @@ import firststep.internal.GLFW;
 import firststep.internal.OS;
 import firststep.internal.GLFW.Callback;
 
-public class Window {
+public class Window extends Framebuffer {
 
 	/**
 	 * Mouse buttons
@@ -430,17 +430,16 @@ public class Window {
 	}
 
 	private long glfwWindow; 
-	private Color background = Color.fromRGBA(0f, 0f, 0f, 1f);
+//	private Color background = Color.fromRGBA(0f, 0f, 0f, 1f);
 	private int width, height;
 	private boolean justCreated;
-	
-	private Framebuffer rootFramebuffer;
 	
 	long getGLFWWindow() {
 		return glfwWindow;
 	}
-	
+
 	public Window(String title, int width, int height, Color background) {
+		super(width, height, 0);
 		if (OS.getPlatform() == OS.Platform.OSX) {
 			// We initialize OpenGL 3.2 Core profile on OSX cause
 			// it is the only GL3 that Apple knows.
@@ -457,7 +456,7 @@ public class Window {
 			GLFW.windowHint(GLFW.CONTEXT_VERSION_MINOR, 0);			
 		}
 
-		this.background = background;
+		setBackground(background);
 		
 		glfwWindow = GLFW.createWindow(width, height, title, 0, 0);
 		if (glfwWindow == 0) {
@@ -486,14 +485,15 @@ public class Window {
 		openedWindows.put(glfwWindow, this);
 		justCreated = true;
 		
+		Canvas.ensureNanoVGContextCreated();
 	}
 	
 	private void internalDraw() {
 		GLFW.makeContextCurrent(glfwWindow);
 		
-		rootFramebuffer.beginDrawing();
+		beginDrawing();
 		onFrame();
-		rootFramebuffer.endDrawing();
+		endDrawing();
 		
 		/*int fbWidth = width;	// TODO FramebufferSize
 		int fbHeight = height;	// TODO FramebufferSize
@@ -509,13 +509,6 @@ public class Window {
 	}
 	
 	public void internalWindowSize(int width, int height) {
-		if (rootFramebuffer == null) {
-			rootFramebuffer = new Framebuffer(width, height, 0);
-			rootFramebuffer.setBackground(this.background);
-		} else {
-			rootFramebuffer.resize(width, height);
-		}
-
 		onSizeChange(width, height);
 		this.width = width;
 		this.height = height;
@@ -535,17 +528,6 @@ public class Window {
 		GLFW.setWindowTitle(glfwWindow, title);
 	}
 	
-	public Color getBackground() {
-		return background;
-	}
-	
-	public void setBackground(Color background) {
-		this.background = background;
-		if (rootFramebuffer != null) {
-			this.rootFramebuffer.setBackground(background);
-		}
-	}
-	
 	public int getWidth() {
 		return width;
 	}
@@ -554,12 +536,9 @@ public class Window {
 		return height;
 	}
 
-	public void setSize(int width, int height) {
+	public void resize(int width, int height) {
+		super.resize(width, height);
 		internalWindowSize(width, height);
-	}
-	
-	protected Framebuffer getRootFramebuffer() {
-		return rootFramebuffer;
 	}
 		
 	// User events

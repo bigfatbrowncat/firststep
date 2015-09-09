@@ -112,15 +112,22 @@ public class Canvas {
 		return Logger.getLogger(Window.class.getName(), null);
 	}
 
-	static long nanoVGContext;
+	static Long nanoVGContext = null;
 	
-	static {
-		nanoVGContext = NVG.create(firststep.internal.NVG.NVG_ANTIALIAS | firststep.internal.NVG.NVG_STENCIL_STROKES | firststep.internal.NVG.NVG_DEBUG);
-		if (nanoVGContext == 0) {
-			GLFW.terminate();
-			throw new RuntimeException("NanoVG can't create a context for the window");
+	/**
+	 * As soon as we need at least one window to support NanoVG context,
+	 * this function (which should be a static initializer in an ideal world)
+	 * is called by the {@link Window} class constructor
+	 */
+	static void ensureNanoVGContextCreated() {
+		if (nanoVGContext == null) {
+			nanoVGContext = NVG.create(firststep.internal.NVG.NVG_ANTIALIAS | firststep.internal.NVG.NVG_STENCIL_STROKES | firststep.internal.NVG.NVG_DEBUG);
+			if (nanoVGContext == 0) {
+				GLFW.terminate();
+				throw new RuntimeException("NanoVG can't create a context for the window");
+			}
+			getLogger().log(Level.INFO, "NanoVG context is created");
 		}
-		getLogger().log(Level.INFO, "NanoVG context is created");
 	}
 	
 	void beginFrame(int width, int height, float ratio) {
