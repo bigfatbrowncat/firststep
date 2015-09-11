@@ -262,6 +262,8 @@ public class NVG {
 	
 	static public native long create(int flags);
 
+	public native static void delete(long ctx);
+
 	public native static void beginFrame(long ctx, int width, int height,
 			float ratio);
 

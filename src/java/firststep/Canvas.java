@@ -3,10 +3,11 @@ package firststep;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import firststep.contracts.Deletable;
 import firststep.internal.GLFW;
 import firststep.internal.NVG;
 
-public class Canvas {
+public class Canvas implements Deletable {
 	
 	/**
 	 * Line caps
@@ -113,20 +114,29 @@ public class Canvas {
 	}
 
 	static Long nanoVGContext = null;
+	private boolean primary;
 	
 	/**
-	 * As soon as we need at least one window to support NanoVG context,
-	 * this function (which should be a static initializer in an ideal world)
-	 * is called by the {@link Window} class constructor
+	 * This function should be called by the {@link Framebuffer} object 
+	 * with id 0 right after its creation.
 	 */
-	static void ensureNanoVGContextCreated() {
-		if (nanoVGContext == null) {
+	
+	public Canvas(boolean primary) {
+		if (primary) {
 			nanoVGContext = NVG.create(firststep.internal.NVG.NVG_ANTIALIAS | firststep.internal.NVG.NVG_STENCIL_STROKES | firststep.internal.NVG.NVG_DEBUG);
 			if (nanoVGContext == 0) {
-				GLFW.terminate();
+				//GLFW.terminate();
 				throw new RuntimeException("NanoVG can't create a context for the window");
 			}
+			
 			getLogger().log(Level.INFO, "NanoVG context is created");
+		}
+	}
+	
+	@Override
+	public void delete() {
+		if (primary) {
+			NVG.delete(nanoVGContext);
 		}
 	}
 	

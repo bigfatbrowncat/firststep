@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -292,7 +293,7 @@ public class Window extends Framebuffer {
 		
 		@Override
 		public void windowSize(long window, int width, int height) {
-			openedWindows.get(window).internalWindowSize(width, height);
+			openedWindows.get(window).resize(width, height);
 		}
 		
 		@Override
@@ -379,7 +380,7 @@ public class Window extends Framebuffer {
 		return Logger.getLogger(Window.class.getName(), null);
 	}
 	
-	private static List<Deletable> orderedToDelete = new ArrayList<Deletable>();
+	private static Set<Deletable> orderedToDelete = new HashSet<Deletable>();
 	public static void issueDelete(Deletable deletable) {
 		synchronized (orderedToDelete) {
 			orderedToDelete.add(deletable);
@@ -402,7 +403,7 @@ public class Window extends Framebuffer {
 			for (Window window : openedWindows.values()) {
 				if (window.justCreated) {
 					window.justCreated = false;
-					window.internalWindowSize(window.width, window.height);
+					window.resize(window.getWidth(), window.getHeight());
 				} else {
 					window.internalDraw();
 				}
@@ -432,15 +433,14 @@ public class Window extends Framebuffer {
 
 	private long glfwWindow; 
 //	private Color background = Color.fromRGBA(0f, 0f, 0f, 1f);
-	private int width, height;
+	//private int width, height;
 	private boolean justCreated;
 	
 	long getGLFWWindow() {
 		return glfwWindow;
 	}
 
-	public Window(String title, int width, int height, Color background) {
-		super(width, height, 0);
+	private static long createGLFWWindow(String title, int width, int height) {
 		if (OS.getPlatform() == OS.Platform.OSX) {
 			// We initialize OpenGL 3.2 Core profile on OSX cause
 			// it is the only GL3 that Apple knows.
@@ -457,36 +457,42 @@ public class Window extends Framebuffer {
 			GLFW.windowHint(GLFW.CONTEXT_VERSION_MINOR, 0);			
 		}
 
-		setBackground(background);
-		
-		glfwWindow = GLFW.createWindow(width, height, title, 0, 0);
+		long glfwWindow = GLFW.createWindow(width, height, title, 0, 0);
 		if (glfwWindow == 0) {
-			GLFW.terminate();
+			//GLFW.terminate();
 			throw new RuntimeException("GLFW can't create a window");
 		}
 		getLogger().log(Level.INFO, "GLFW window \"" + title + "\" [" + width + "x" + height + "] is created");
-
+		
+		// Create the GL3W context
 		if (!gl3wInitialized) {
-			makeContextCurrent();
+			GLFW.makeContextCurrent(glfwWindow);
 			if (!GL3W.init()) {
-				GLFW.terminate();
+				//GLFW.terminate();
 				throw new RuntimeException("GL3W initialization failed");
 			}
 			gl3wInitialized = true;
 			getLogger().log(Level.INFO, "GL3W context is initialized");
 		}
-		
+
+		return glfwWindow;
+	}
+	
+	private Window(long glfwWindow, int width, int height) {
+		super(width, height);
+		this.glfwWindow = glfwWindow;
+	}
+	
+	public Window(String title, int width, int height, Color background) {
+		this(createGLFWWindow(title, width, height), width, height);
+
+		setBackground(background);
+
 		getLogger().log(Level.INFO, "GL version: " + GL3W.getGLVersionMajor() + "." + GL3W.getGLVersionMinor());
 		getLogger().log(Level.INFO, "GLSL version: " + GL3W.getGLSLVersionMajor() + "." + GL3W.getGLSLVersionMinor());
-
-		//this.background = background;
-		this.width = width;
-		this.height = height;
-
+		
 		openedWindows.put(glfwWindow, this);
 		justCreated = true;
-		
-		Canvas.ensureNanoVGContextCreated();
 	}
 	
 	private void internalDraw() {
@@ -505,18 +511,6 @@ public class Window extends Framebuffer {
         GLFW.swapBuffers(glfwWindow);
 	}
 
-	void makeContextCurrent() {
-		GLFW.makeContextCurrent(glfwWindow);
-	}
-	
-	public void internalWindowSize(int width, int height) {
-		onSizeChange(width, height);
-		this.width = width;
-		this.height = height;
-
-		internalDraw();
-	}
-	
 	public void close() {
 		GLFW.setWindowShouldClose(glfwWindow, 1);
 	}
@@ -529,17 +523,10 @@ public class Window extends Framebuffer {
 		GLFW.setWindowTitle(glfwWindow, title);
 	}
 	
-	public int getWidth() {
-		return width;
-	}
-	
-	public int getHeight() {
-		return height;
-	}
-
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		internalWindowSize(width, height);
+		onSizeChange(width, height);
+		internalDraw();
 	}
 		
 	// User events

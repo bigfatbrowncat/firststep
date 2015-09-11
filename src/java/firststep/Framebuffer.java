@@ -17,6 +17,7 @@ public class Framebuffer extends Canvas implements Deletable {
 	private boolean isDeleted;
 		
 	public Framebuffer(int width, int height, Image.Flags imageFlags) {
+		super(false);
 		this.width = width;
 		this.height = height;
 		this.imageFlags = imageFlags;
@@ -26,8 +27,9 @@ public class Framebuffer extends Canvas implements Deletable {
 		image = Image.forFramebuffer(id);
 	}
 	
-	Framebuffer(int width, int height, long id) {
-		this.id = id;
+	Framebuffer(int width, int height) {
+		super(true);
+		this.id = 0;
 		this.width = width;
 		this.height = height;
 	}

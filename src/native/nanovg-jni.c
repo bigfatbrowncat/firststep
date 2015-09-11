@@ -75,6 +75,12 @@ JNIEXPORT jlong JNICALL Java_firststep_internal_NVG_create
 	return (jlong)(NVGcontext*) nvgCreateGL3(flags);
 }
 
+JNIEXPORT void JNICALL Java_firststep_internal_NVG_delete
+  (JNIEnv *e, jclass c, jlong ctx)
+{
+	nvgDeleteGL3((NVGcontext*)ctx);
+}
+
 JNIEXPORT void JNICALL Java_firststep_internal_NVG_beginFrame
   (JNIEnv *e, jclass c, jlong ctx, jint wid, jint hgt, jfloat r)
 {
