@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 public class NVG {
 
 	static {
-		System.loadLibrary("firststep");
+		NativeLoader.loadDefault();
 	}
 
 	public static class Color {

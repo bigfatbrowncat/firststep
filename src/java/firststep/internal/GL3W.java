@@ -2,7 +2,7 @@ package firststep.internal;
 
 public class GL3W {
 	static {
-		System.loadLibrary("firststep");
+		NativeLoader.loadDefault();
 	}
 
 	private GL3W() { }

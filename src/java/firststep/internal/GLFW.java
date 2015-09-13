@@ -222,7 +222,7 @@ public class GLFW {
 	}
 	
 	static {
-		System.loadLibrary("firststep");
+		NativeLoader.loadDefault();
 	}
 	
 	public static final int VERSION_MAJOR = 3;
