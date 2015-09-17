@@ -12,7 +12,10 @@ public class NVG {
 	}
 
 	public static class Color {
-
+		static {
+			NativeLoader.loadDefault();
+		}
+		
 		FloatBuffer buff;
 
 		private Color() {
@@ -53,6 +56,9 @@ public class NVG {
 	}
 	
 	public static class Paint {
+		static {
+			NativeLoader.loadDefault();
+		}
 		
 		FloatBuffer buff;  // must be called buff see void* getBuffPtr(JNIEnv *e, jobject jo)
 		
@@ -95,6 +101,9 @@ public class NVG {
 	// a lot of these are straight ports as JNI is probably slower for
 	// such simple routines
 	public static class Transform {
+		static {
+			NativeLoader.loadDefault();
+		}
 
 		public FloatBuffer buff;
 

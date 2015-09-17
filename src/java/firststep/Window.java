@@ -468,7 +468,6 @@ public class Window extends Framebuffer {
 		if (!gl3wInitialized) {
 			GLFW.makeContextCurrent(glfwWindow);
 			if (!GL3W.init()) {
-				//GLFW.terminate();
 				throw new RuntimeException("GL3W initialization failed");
 			}
 			gl3wInitialized = true;

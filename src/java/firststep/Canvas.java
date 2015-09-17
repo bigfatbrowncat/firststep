@@ -130,6 +130,10 @@ public class Canvas implements Deletable {
 			}
 			
 			getLogger().log(Level.INFO, "NanoVG context is created");
+		} else {
+			if (nanoVGContext == null) {
+				throw new RuntimeException("You should create primary context before creating other ones");
+			}
 		}
 	}
 	
