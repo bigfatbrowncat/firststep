@@ -7,29 +7,48 @@ import firststep.contracts.Deletable;
 import firststep.internal.GL3W;
 import firststep.internal.NVG;
 
-public class Framebuffer extends Canvas implements Deletable {
-	
-	private long id;
+public class Framebuffer extends Canvas {
+	private static class IdHolder implements Deletable {
+		private boolean isDeleted;
+		
+		public final long id;
+
+		public IdHolder(long id) {
+			this.id = id;
+		}
+		
+		@Override
+		public synchronized void delete() {
+			if (!isDeleted) {
+				if (id != 0) NVG.deleteFramebuffer(id);
+				isDeleted = true;
+			}
+		}
+		public boolean isDeleted() {
+			return isDeleted;
+		}
+		
+	}
+	private IdHolder idHolder;
 	private int width, height;
 	private Image.Flags imageFlags;
 	private Color background = Color.fromRGBA(0.0f, 0.0f, 0.0f, 0.0f);
 
-	private boolean isDeleted;
-		
 	public Framebuffer(int width, int height, Image.Flags imageFlags) {
 		super(false);
 		this.width = width;
 		this.height = height;
 		this.imageFlags = imageFlags;
 
-		id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
+		long id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
 		if (id == 0) throw new RuntimeException("Can't create a framebuffer");
 		image = Image.forFramebuffer(id);
+		idHolder = new IdHolder(id);
 	}
 	
 	Framebuffer(int width, int height) {
 		super(true);
-		this.id = 0;
+		this.idHolder = new IdHolder(0);
 		this.width = width;
 		this.height = height;
 	}
@@ -38,23 +57,23 @@ public class Framebuffer extends Canvas implements Deletable {
 		this.width = newWidth;
 		this.height = newHeight;
 
-		if (id != 0) {
-			NVG.deleteFramebuffer(id);
-			id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
+		if (idHolder.id != 0) {
+			idHolder.delete();
+			
+			long id = NVG.createFramebuffer(nanoVGContext, width, height, imageFlags.toFlags());
 			if (id == 0) throw new RuntimeException("Can't recreate a framebuffer");
-			image = Image.forFramebuffer(id);
+			idHolder = new IdHolder(id);
+			
+			image = Image.forFramebuffer(idHolder.id);
 		}
 	}
 	
 	public synchronized void delete() {
-		if (!isDeleted) {
-			if (id != 0) NVG.deleteFramebuffer(id);
-			isDeleted = true;
-		}
+		idHolder.delete();
 	}
 	
 	public boolean isDeleted() {
-		return isDeleted;
+		return idHolder.isDeleted();
 	}
 	
 	private Image image;
@@ -81,7 +100,7 @@ public class Framebuffer extends Canvas implements Deletable {
 		int winWidth = (int)(fboSize.getX() / pxRatio);
 		int winHeight = (int)(fboSize.getY() / pxRatio);
 
-		NVG.bindFramebuffer(id);
+		NVG.bindFramebuffer(idHolder.id);
 		GL3W.glViewport(0, 0, fboSize.getX(), fboSize.getY());
 		if (background != null) {
 			GL3W.glClearColor(background.getRed(), background.getGreen(), background.getBlue(), background.getAlpha());
@@ -126,9 +145,9 @@ public class Framebuffer extends Canvas implements Deletable {
 		// Restoring the previous framebuffer
 		if (framebufferStack.size() > 0) {
 			Framebuffer prev = framebufferStack.get(framebufferStack.size() - 1);
-			NVG.bindFramebuffer(prev.id);
+			NVG.bindFramebuffer(prev.idHolder.id);
 			IntXY fboSize = new IntXY(prev.width, prev.height);
-			if (prev.id == 0) {
+			if (prev.idHolder.id == 0) {
 				GL3W.glViewport(0, 0, fboSize.getX(), fboSize.getY());
 			}
 			int winWidth = (int)(fboSize.getX() / pxRatio);
@@ -151,7 +170,7 @@ public class Framebuffer extends Canvas implements Deletable {
 	
 	@Override
 	protected void finalize() throws Throwable {
-		Window.issueDelete(this);
+		Window.issueDelete(idHolder);
 		super.finalize();
 	}
 }

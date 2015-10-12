@@ -93,25 +93,50 @@ public class Image implements Deletable {
 		}
 	}
 
-	
-	int id;
+	static class IdHolder implements Deletable {
+		private boolean isDeleted;
+		
+		private boolean shouldBeDeleted; 
+		public final int id;
 
-	private boolean isDeleted;
-	private boolean shouldBeDeleted;
+		public IdHolder(int id, boolean shouldBeDeleted) {
+			this.id = id;
+			this.shouldBeDeleted = shouldBeDeleted;
+		}
+		
+		@Override
+		public void delete() {
+			if (!isDeleted) {
+				if (shouldBeDeleted) {
+					NVG.deleteImage(Canvas.nanoVGContext, id);
+				}
+				isDeleted = true;
+			}
+		}
+
+		public boolean isDeleted() {
+			return isDeleted;
+		}
+		
+	}
+	final IdHolder idHolder;
 	
 	public Image(String filename, Flags imageFlags) throws IOException {
-		id = NVG.createImage(Canvas.nanoVGContext, filename, imageFlags.toFlags());
+		int id = NVG.createImage(Canvas.nanoVGContext, filename, imageFlags.toFlags());
 		if (id == 0) {
 			throw new IOException("Can't load image from file " + filename);
 		}
+		idHolder = new IdHolder(id, true);
 	}
 	
 	public Image(byte[] data, Flags imageFlags) {
-		id = NVG.createImageMem(Canvas.nanoVGContext, data, imageFlags.toFlags());
+		int id = NVG.createImageMem(Canvas.nanoVGContext, data, imageFlags.toFlags());
+		idHolder = new IdHolder(id, true);
 	}
 	
 	public Image(InputStream is, Flags imageFlags) throws IOException {
-		id = NVG.createImageMem(Canvas.nanoVGContext, JavaTools.convertSteamToByteArray(is, 65536), imageFlags.toFlags());
+		int id = NVG.createImageMem(Canvas.nanoVGContext, JavaTools.convertSteamToByteArray(is, 65536), imageFlags.toFlags());
+		idHolder = new IdHolder(id, true);
 	}
 	
 	static Image forFramebuffer(long fbId) {
@@ -120,32 +145,26 @@ public class Image implements Deletable {
 	}
 	
 	private Image(int id, boolean shouldBeDeleted) {
-		this.id = id;
-		this.shouldBeDeleted = shouldBeDeleted;
+		this.idHolder = new IdHolder(id, shouldBeDeleted);
 	}
 	
 	public IntXY getSize() {
 		int[] dims = new int[2];
-		NVG.imageSize(Canvas.nanoVGContext, id, dims);
+		NVG.imageSize(Canvas.nanoVGContext, idHolder.id, dims);
 		return new IntXY(dims[0], dims[1]);
 	}
 	
 	public void delete() {
-		if (!isDeleted) {
-			if (shouldBeDeleted) {
-				NVG.deleteImage(Canvas.nanoVGContext, id);
-			}
-			isDeleted = true;
-		}
+		idHolder.isDeleted();
 	}
 	
 	@Override
 	protected void finalize() throws Throwable {
-		Window.issueDelete(this);
+		Window.issueDelete(idHolder);
 		super.finalize();
 	}
 	
 	public boolean isDeleted() {
-		return isDeleted;
+		return idHolder.isDeleted();
 	}
 }

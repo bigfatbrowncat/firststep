@@ -364,7 +364,7 @@ public class Canvas implements Deletable {
 	
 	public Paint imagePattern(float ox, float oy, float ex, float ey, float angle, Image image, float alpha) {
 		NVG.Paint res = new NVG.Paint();
-		res.imagePattern(nanoVGContext, ox, oy, ex, ey, angle, image.id, alpha);
+		res.imagePattern(nanoVGContext, ox, oy, ex, ey, angle, image.idHolder.id, alpha);
 		return new Paint(res, image);
 	}
 	
