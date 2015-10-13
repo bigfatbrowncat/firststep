@@ -187,6 +187,28 @@ SOURCE_GROUP("hostapi\\wdmks" FILES
 )
 ENDIF(PA_USE_WDMKS)
 
+IF(APPLE)
+SET(PA_USE_COREAUDIO ON CACHE BOOL "coreaudio")
+
+IF(PA_USE_COREAUDIO)
+
+SET(PA_COREAUDIO_INCLUDES
+  include/pa_mac_core.h
+)
+
+SET(PA_COREAUDIO_SOURCES
+  src/hostapi/coreaudio/pa_mac_core_blocking.c
+  src/hostapi/coreaudio/pa_mac_core_utilities.c
+  src/hostapi/coreaudio/pa_mac_core.c
+)
+
+SOURCE_GROUP("hostapi/coreaudio" FILES
+  ${PA_COREAUDIO_SOURCES}
+)
+
+ENDIF(PA_USE_COREAUDIO)
+ENDIF(APPLE)
+
 SET(PA_SKELETON_SOURCES
   src/hostapi/skeleton/pa_hostapi_skeleton.c
 )
@@ -204,6 +226,15 @@ SET(PA_INCLUDES
   ${PA_WASAPI_INCLUDES}
   ${PA_WDMKS_INCLUDES}
 )
+ELSE(WIN32)
+IF(APPLE)
+SET(PA_INCLUDES 
+  include/portaudio.h
+  ${PA_COREAUDIO_INCLUDES}
+)
+ELSE(APPLE)
+# Not implemented
+ENDIF(APPLE)
 ENDIF(WIN32)
 
 SOURCE_GROUP("include" FILES
@@ -250,19 +281,32 @@ SOURCE_GROUP("cmake_generated" FILES
   ${CMAKE_CURRENT_BINARY_DIR}/options_cmake.h
 )
 
-IF(WIN32)
-SET(PA_PLATFORM_SOURCES 
-  src/os/win/pa_win_hostapis.c
-  src/os/win/pa_win_util.c
-  src/os/win/pa_win_waveformat.c
-  src/os/win/pa_win_wdmks_utils.c
-  src/os/win/pa_win_coinitialize.c
-  src/os/win/pa_x86_plain_converters.c
-)
+IF (WIN32)
 
-SOURCE_GROUP("os\\win" FILES
-  ${PA_PLATFORM_SOURCES}
-)
+	SET(PA_PLATFORM_SOURCES 
+	  src/os/win/pa_win_hostapis.c
+	  src/os/win/pa_win_util.c
+	  src/os/win/pa_win_waveformat.c
+	  src/os/win/pa_win_wdmks_utils.c
+	  src/os/win/pa_win_coinitialize.c
+	  src/os/win/pa_x86_plain_converters.c
+	)
+
+	SOURCE_GROUP("os\\win" FILES
+	  ${PA_PLATFORM_SOURCES}
+	)
+
+ELSE (WIN32)
+
+	SET(PA_PLATFORM_SOURCES 
+	  src/os/unix/pa_unix_hostapis.c
+	  src/os/unix/pa_unix_util.c
+	)
+
+	SOURCE_GROUP("os/unix" FILES
+	  ${PA_PLATFORM_SOURCES}
+	)
+
 ENDIF(WIN32)
 
 INCLUDE_DIRECTORIES( include )
@@ -284,6 +328,7 @@ SET(SOURCES_LESS_ASIO_SDK
   ${PA_WDMKS_SOURCES}
   ${PA_SKELETON_SOURCES}
   ${PA_PLATFORM_SOURCES}
+  ${PA_COREAUDIO_SOURCES}
 )
 
 IF(PA_UNICODE_BUILD)

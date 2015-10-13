@@ -46,18 +46,18 @@ SET(GLFW_BUILD_DOCS OFF CACHE BOOL "build docs")
 SET(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "build examples")
 SET(GLFW_BUILD_TESTS OFF CACHE BOOL "build tests")
 
-SET(PA_USE_WASAPI OFF CACHE BOOL "wasapi")
-SET(PA_USE_WDMKS OFF CACHE BOOL  "wdmks")
-
 add_subdirectory("glfw")
 add_subdirectory("portaudio")
 
 SET(CMAKE_C_FLAGS "-std=gnu99")
 
 IF(APPLE)
-    SET(EXTRA_LIBS "-framework Cocoa -framework OpenGL -framework CoreAudio")
+    SET(EXTRA_LIBS "-framework Cocoa -framework OpenGL -framework CoreAudio -framework AudioToolbox -framework AudioUnit")
 	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99")
 ELSEIF(WIN32)
+	SET(PA_USE_WASAPI OFF CACHE BOOL "wasapi")
+	SET(PA_USE_WDMKS OFF CACHE BOOL  "wdmks")
+
 	SET(EXTRA_LIBS "-lglu32 -lopengl32 -lwinmm")
 	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99 -static -static-libgcc -static-libstdc++ -mwindows")
 	SET(CMAKE_SHARED_LINKER_FLAGS "-std=gnu99 -static -static-libgcc -static-libstdc++ -mwindows")

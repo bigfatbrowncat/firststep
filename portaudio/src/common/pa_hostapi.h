@@ -60,6 +60,8 @@ The code below ensures that PA_USE_* macros are always defined and have value
 are defaulted to 1.
 */
 
+#include "options_cmake.h"
+   
 #ifndef PA_USE_SKELETON
 #define PA_USE_SKELETON 0
 #elif (PA_USE_SKELETON != 0) && (PA_USE_SKELETON != 1)
