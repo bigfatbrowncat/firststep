@@ -1,0 +1,3 @@
+Some changes applied to incorporate portaudio into firststep building system
+1. Removed bindings folder
+2. Target "portaudio" removed from CMakeLists.txt ("portaudio_static" is the only being used)
