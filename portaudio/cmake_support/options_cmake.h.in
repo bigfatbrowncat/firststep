@@ -17,9 +17,9 @@
 */
 
 #ifdef _WIN32
-#if defined(PA_USE_ASIO) || defined(PA_USE_DS) || defined(PA_USE_WMME) || defined(PA_USE_WASAPI) || defined(PA_USE_WDMKS)
-#error "This header needs to be included before pa_hostapi.h!!"
-#endif
+//#if defined(PA_USE_ASIO) || defined(PA_USE_DS) || defined(PA_USE_WMME) || defined(PA_USE_WASAPI) || defined(PA_USE_WDMKS)
+//#error "This header needs to be included before pa_hostapi.h!!"
+//#endif
 
 #cmakedefine01 PA_USE_ASIO
 #cmakedefine01 PA_USE_DS
