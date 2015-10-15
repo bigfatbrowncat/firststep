@@ -14,7 +14,7 @@ find_package(JNI)
 if(MINGW)
 	SET(CMAKE_SHARED_LIBRARY_PREFIX "")
 	SET(CMAKE_SHARED_MODULE_PREFIX "")
-endif (MINGW)
+endif(MINGW)
 
 SET(CMAKE_C_FLAGS "-std=gnu99")
 
@@ -61,7 +61,7 @@ target_link_libraries(${LIBNAME} glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA
 # Java code
 
 # 	J1. Titles
-set(JARNAME "firststep-java")
+set(JARNAME "${PROJNAME}-java")
 find_package(Java REQUIRED)
 include(cmake_patches/UseJavaCustom.cmake)
 
