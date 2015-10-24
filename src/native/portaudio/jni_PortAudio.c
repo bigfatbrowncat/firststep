@@ -113,7 +113,7 @@ JNIEXPORT void JNICALL Java_firststep_internal_portaudio_PortAudio_getDeviceInfo
 	info = Pa_GetDeviceInfo( index );
 	if( info == NULL )
 	{
-		jpa_ThrowError( env, "Pa_GetDeviceInfo returned NULL." );
+		jpa_ThrowErrorNoCode( env, "Pa_GetDeviceInfo returned NULL." );
 	}
 	else
 	{
@@ -180,7 +180,7 @@ JNIEXPORT void JNICALL Java_firststep_internal_portaudio_PortAudio_getHostApiInf
 	info = Pa_GetHostApiInfo( index );
 	if( info == NULL )
 	{
-		jpa_ThrowError( env, "Pa_GetHostApiInfo returned NULL." );
+		jpa_ThrowErrorNoCode( env, "Pa_GetHostApiInfo returned NULL." );
 	}
 	else
 	{

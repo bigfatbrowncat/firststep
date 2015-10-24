@@ -71,16 +71,16 @@ public class BlockingStream
 	/**
 	 * @return number of frames that can be read without blocking.
 	 */
-	public native int getReadAvailable();
+	public native int getReadAvailable() throws PortAudioException;
 
 	/**
 	 * @return number of frames that can be written without blocking.
 	 */
-	public native int getWriteAvailable();
+	public native int getWriteAvailable() throws PortAudioException;
 
-	private native boolean readFloats( float[] buffer, int numFrames );
+	private native boolean readFloats( float[] buffer, int numFrames ) throws PortAudioException;
 
-	private native boolean writeFloats( float[] buffer, int numFrames );
+	private native boolean writeFloats( float[] buffer, int numFrames ) throws PortAudioException;
 
 	/**
 	 * Read 32-bit floating point data from the stream into the array.
@@ -90,7 +90,7 @@ public class BlockingStream
 	 *            number of frames to read
 	 * @return true if an input overflow occurred
 	 */
-	public boolean read( float[] buffer, int numFrames )
+	public boolean read( float[] buffer, int numFrames ) throws PortAudioException
 	{
 		if( inputFormat != PortAudio.FORMAT_FLOAT_32 )
 		{
@@ -109,7 +109,7 @@ public class BlockingStream
 	 *            number of frames to write
 	 * @return true if an output underflow occurred
 	 */
-	public boolean write( float[] buffer, int numFrames )
+	public boolean write( float[] buffer, int numFrames ) throws PortAudioException
 	{
 		if( outputFormat != PortAudio.FORMAT_FLOAT_32 )
 		{
@@ -119,9 +119,9 @@ public class BlockingStream
 		return writeFloats( buffer, numFrames );
 	}
 
-	private native boolean readShorts( short[] buffer, int numFrames );
+	private native boolean readShorts( short[] buffer, int numFrames ) throws PortAudioException;
 
-	private native boolean writeShorts( short[] buffer, int numFrames );
+	private native boolean writeShorts( short[] buffer, int numFrames ) throws PortAudioException;
 
 	/**
 	 * Read 16-bit integer data to the stream from the array.
@@ -131,7 +131,7 @@ public class BlockingStream
 	 *            number of frames to write
 	 * @return true if an input overflow occurred
 	 */
-	public boolean read( short[] buffer, int numFrames )
+	public boolean read( short[] buffer, int numFrames ) throws PortAudioException
 	{
 		if( inputFormat != PortAudio.FORMAT_INT_16 )
 		{
@@ -149,7 +149,7 @@ public class BlockingStream
 	 *            number of frames to write
 	 * @return true if an output underflow occurred
 	 */
-	public boolean write( short[] buffer, int numFrames )
+	public boolean write( short[] buffer, int numFrames ) throws PortAudioException
 	{
 		if( outputFormat != PortAudio.FORMAT_INT_16 )
 		{
@@ -162,28 +162,28 @@ public class BlockingStream
 	/**
 	 * Atart audio I/O.
 	 */
-	public native void start();
+	public native void start() throws PortAudioException;
 
 	/**
 	 * Wait for the stream to play all of the data that has been written then
 	 * stop.
 	 */
-	public native void stop();
+	public native void stop() throws PortAudioException;
 
 	/**
 	 * Stop immediately and lose any data that was written but not played.
 	 */
-	public native void abort();
+	public native void abort() throws PortAudioException;
 
 	/**
 	 * Close the stream and zero out the pointer. Do not reference the stream
 	 * after this.
 	 */
-	public native void close();
+	public native void close() throws PortAudioException;
 
-	public native boolean isStopped();
+	public native boolean isStopped() throws PortAudioException;
 
-	public native boolean isActive();
+	public native boolean isActive() throws PortAudioException;
 
 	public String toString()
 	{
@@ -195,11 +195,11 @@ public class BlockingStream
 	/**
 	 * Get audio time related to this stream. Note that it may not start at 0.0.
 	 */
-	public native double getTime();
+	public native double getTime() throws PortAudioException;
 
-	private native void getInfo( StreamInfo streamInfo );
+	private native void getInfo( StreamInfo streamInfo ) throws PortAudioException;
 
-	public StreamInfo getInfo()
+	public StreamInfo getInfo() throws PortAudioException
 	{
 		StreamInfo streamInfo = new StreamInfo();
 		getInfo( streamInfo );

@@ -55,7 +55,8 @@ void jpa_SetStringField( JNIEnv *env, jclass cls, jobject obj, const char *field
 PaStreamParameters *jpa_FillStreamParameters( JNIEnv *env, jobject jstreamParam, PaStreamParameters *myParams );
 
 jint jpa_CheckError( JNIEnv *env, PaError err );
-jint jpa_ThrowError( JNIEnv *env, const char *message );
+jint jpa_ThrowError( JNIEnv *env, int code, const char *message );
+jint jpa_ThrowErrorNoCode( JNIEnv *env, const char *message );
 
 PaStream *jpa_GetStreamPointer( JNIEnv *env, jobject blockingStream );
 

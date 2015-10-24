@@ -87,14 +87,14 @@ JNIEXPORT jboolean JNICALL Java_firststep_internal_portaudio_BlockingStream_writ
 	PaStream *stream =jpa_GetStreamPointer( env, blockingStream );
 	if( buffer == NULL )
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "null stream buffer");
 		return FALSE;
 	}
 	carr = (*env)->GetFloatArrayElements(env, buffer, NULL);
 	if (carr == NULL)
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "invalid stream buffer");
 		return FALSE;
 	}
@@ -124,14 +124,14 @@ JNIEXPORT jboolean JNICALL Java_firststep_internal_portaudio_BlockingStream_read
 	PaStream *stream =jpa_GetStreamPointer( env, blockingStream );
 	if( buffer == NULL )
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "null stream buffer");
 		return FALSE;
 	}
 	carr = (*env)->GetFloatArrayElements(env, buffer, NULL);
 	if (carr == NULL)
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "invalid stream buffer");
 		return FALSE;
 	}
@@ -161,14 +161,14 @@ JNIEXPORT jboolean JNICALL Java_firststep_internal_portaudio_BlockingStream_writ
 	PaStream *stream =jpa_GetStreamPointer( env, blockingStream );
 	if( buffer == NULL )
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "null stream buffer");
 		return FALSE;
 	}
 	carr = (*env)->GetShortArrayElements(env, buffer, NULL);
 	if (carr == NULL)
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "invalid stream buffer");
 		return FALSE;
 	}
@@ -198,14 +198,14 @@ JNIEXPORT jboolean JNICALL Java_firststep_internal_portaudio_BlockingStream_read
 	PaStream *stream =jpa_GetStreamPointer( env, blockingStream );
 	if( buffer == NULL )
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "null stream buffer");
 		return FALSE;
 	}
 	carr = (*env)->GetShortArrayElements(env, buffer, NULL);
 	if (carr == NULL)
 	{
-		(*env)->ThrowNew( env, (*env)->FindClass(env,"java/lang/RuntimeException"),
+		(*env)->ThrowNew( env, (*env)->FindClass(env,"firststep/internal/portaudio/PortAudioException"),
                   "invalid stream buffer");
 		return FALSE;
 	}
@@ -336,7 +336,7 @@ JNIEXPORT void JNICALL Java_firststep_internal_portaudio_BlockingStream_getInfo
 	const PaStreamInfo *info = Pa_GetStreamInfo( stream );
 	if( streamInfo == NULL )
 	{
-		jpa_ThrowError( env, "Invalid stream." );
+		jpa_ThrowErrorNoCode( env, "Invalid stream." );
 	}
 	else
 	{

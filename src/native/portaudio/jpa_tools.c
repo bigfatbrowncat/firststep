@@ -36,6 +36,8 @@
  * license above.
  */
 
+#include <assert.h>
+
 #include "jni_PortAudio.h"
 #include "portaudio.h"
 #include "jpa_tools.h"
@@ -43,111 +45,60 @@
 jint jpa_GetIntField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName )
 {
      /* Look for the instance field maxInputChannels in cls */
-     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "I");
-     if (fid == NULL)
-	 {
-		 jpa_ThrowError( env, "Cannot find integer JNI field." );
-		return 0;
-     }
-	 else
-	 {
-		return (*env)->GetIntField(env, obj, fid );
-	 }
+     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "I"); assert(fid != NULL);
+     return (*env)->GetIntField(env, obj, fid );
 }
 
 void jpa_SetIntField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName, jint value )
 {
      /* Look for the instance field maxInputChannels in cls */
-     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "I");
-     if (fid == NULL)
-	 {
-		 jpa_ThrowError( env, "Cannot find integer JNI field." );
-     }
-	 else
-	 {
-		(*env)->SetIntField(env, obj, fid, value );
-	 }
+     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "I"); assert(fid != NULL);
+     (*env)->SetIntField(env, obj, fid, value );
 }
 
 jlong jpa_GetLongField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName )
 {
      /* Look for the instance field maxInputChannels in cls */
-     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "J");
-     if (fid == NULL)
-	 {
-		 jpa_ThrowError( env, "Cannot find long JNI field." );
-		return 0L;
-     }
-	 else
-	 {
-		return (*env)->GetLongField(env, obj, fid );
-	 }
+     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "J"); assert(fid != NULL);
+     return (*env)->GetLongField(env, obj, fid );
 }
 
 void jpa_SetLongField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName, jlong value )
 {
      /* Look for the instance field maxInputChannels in cls */
-     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "J");
-     if (fid == NULL)
-	 {
-		 jpa_ThrowError( env, "Cannot find long JNI field." );
-     }
-	 else
-	 {
-		(*env)->SetLongField(env, obj, fid, value );
-	 }
+     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "J"); assert(fid != NULL);
+     (*env)->SetLongField(env, obj, fid, value );
 }
 
 
 void jpa_SetDoubleField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName, jdouble value )
 {
      /* Look for the instance field maxInputChannels in cls */
-     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "D");
-     if (fid == NULL)
-	 {
-		 jpa_ThrowError( env, "Cannot find double JNI field." );
-     }
-	 else
-	 {
-		(*env)->SetDoubleField(env, obj, fid, value );
-	 }
+     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "D"); assert(fid != NULL);
+     (*env)->SetDoubleField(env, obj, fid, value );
 }
 
 
 jdouble jpa_GetDoubleField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName )
 {
      /* Look for the instance field maxInputChannels in cls */
-     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "D");
-     if (fid == NULL)
-	 {
-		 jpa_ThrowError( env, "Cannot find double JNI field." );
-		return 0;
-     }
-	 else
-	 {
-		return (*env)->GetDoubleField(env, obj, fid );
-	 }
+     jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "D"); assert(fid != NULL);
+     return (*env)->GetDoubleField(env, obj, fid );
 }
 
 void jpa_SetStringField( JNIEnv *env, jclass cls, jobject obj, const char *fieldName, const char *value )
 {
      /* Look for the instance field maxInputChannels in cls */
      jfieldID fid = (*env)->GetFieldID(env, cls, fieldName, "Ljava/lang/String;");
-     if (fid == NULL)
+     assert(fid != NULL);
+     jstring jstr = (*env)->NewStringUTF(env, value);
+	 if (jstr == NULL)
 	 {
-		 jpa_ThrowError( env, "Cannot find String JNI field." );
-     }
+	 	 jpa_ThrowErrorNoCode( env, "Cannot create new String." );
+	 }
 	 else
 	 {
-		jstring jstr = (*env)->NewStringUTF(env, value);
-		if (jstr == NULL)
-		{
-			jpa_ThrowError( env, "Cannot create new String." );
-		}
-		else
-		{
-			(*env)->SetObjectField(env, obj, fid, jstr );
-		}
+	 	 (*env)->SetObjectField(env, obj, fid, jstr );
 	 }
 }
 
@@ -169,29 +120,40 @@ PaStreamParameters *jpa_FillStreamParameters( JNIEnv *env, jobject jstreamParam,
 }
 
 // Create an exception that will be thrown when we return from the JNI call.
-jint jpa_ThrowError( JNIEnv *env, const char *message )
+jint jpa_ThrowError( JNIEnv *env, int code, const char *message )
 {
-	return (*env)->ThrowNew(env, (*env)->FindClass( env, "java/lang/RuntimeException"),
-                  message );
+	jclass exc_cls = (*env)->FindClass(env, "firststep/internal/portaudio/PortAudioException");
+	jmethodID exc_cons = (*env)->GetMethodID(env, exc_cls, "<init>", "(ILjava/lang/String;)V");
+	jobject exc = (*env)->NewObject(env, exc_cls, exc_cons, code, (*env)->NewStringUTF(env, message));
+	return (*env)->Throw(env, exc);
 }
+
+jint jpa_ThrowErrorNoCode( JNIEnv *env, const char *message )
+{
+	jclass exc_cls = (*env)->FindClass(env, "firststep/internal/portaudio/PortAudioException");
+	jmethodID exc_cons = (*env)->GetMethodID(env, exc_cls, "<init>", "(Ljava/lang/String;)V");
+	jobject exc = (*env)->NewObject(env, exc_cls, exc_cons, (*env)->NewStringUTF(env, message));
+	return (*env)->Throw(env, exc);
+}
+
 
 // Throw an exception on error.
 jint jpa_CheckError( JNIEnv *env, PaError err )
 {
 	if( err == -1 )
 	{
-        return jpa_ThrowError( env, "-1, possibly no available default device" );
+        return jpa_ThrowErrorNoCode( env, "-1, possibly no available default device" );
     }
     else if( err < 0 )
     {
 		if( err == paUnanticipatedHostError )
 		{
 			const PaHostErrorInfo *hostErrorInfo = Pa_GetLastHostErrorInfo();
-			return jpa_ThrowError( env, hostErrorInfo->errorText );
+			return jpa_ThrowError( env, err, hostErrorInfo->errorText );
 		}
 		else
 		{
-			return jpa_ThrowError( env, Pa_GetErrorText( err ) );
+			return jpa_ThrowError( env, err, Pa_GetErrorText( err ) );
 		}
 	}
 	else

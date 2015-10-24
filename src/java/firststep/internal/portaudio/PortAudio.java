@@ -139,7 +139,7 @@ public class PortAudio
 	 * and getErrorText(), this function MUST be called before using any other
 	 * PortAudio API functions.
 	 */
-	public native static void initialize();
+	public native static void initialize() throws PortAudioException;
 
 	/**
 	 * Library termination function - call this when finished using PortAudio.
@@ -149,15 +149,15 @@ public class PortAudio
 	 * corresponding call to terminate(). The final matching call to terminate()
 	 * will automatically close any PortAudio streams that are still open.
 	 */
-	public native static void terminate();
+	public native static void terminate() throws PortAudioException;
 
 	/**
 	 * @return the number of available devices. The number of available devices
 	 *         may be zero.
 	 */
-	public native static int getDeviceCount();
+	public native static int getDeviceCount() throws PortAudioException;
 
-	private native static void getDeviceInfo( int index, DeviceInfo deviceInfo );
+	private native static void getDeviceInfo( int index, DeviceInfo deviceInfo ) throws PortAudioException;
 
 	/**
 	 * @param index
@@ -166,7 +166,7 @@ public class PortAudio
 	 * @throws RuntimeException
 	 *             if the device parameter is out of range.
 	 */
-	public static DeviceInfo getDeviceInfo( int index )
+	public static DeviceInfo getDeviceInfo( int index ) throws PortAudioException
 	{
 		DeviceInfo deviceInfo = new DeviceInfo();
 		getDeviceInfo( index, deviceInfo );
@@ -176,16 +176,16 @@ public class PortAudio
 	/**
 	 * @return the number of available host APIs.
 	 */
-	public native static int getHostApiCount();
+	public native static int getHostApiCount() throws PortAudioException;
 
 	private native static void getHostApiInfo( int index,
-			HostApiInfo hostApiInfo );
+			HostApiInfo hostApiInfo ) throws PortAudioException;
 
 	/**
 	 * @param index
 	 * @return information about the Host API
 	 */
-	public static HostApiInfo getHostApiInfo( int index )
+	public static HostApiInfo getHostApiInfo( int index ) throws PortAudioException
 	{
 		HostApiInfo hostApiInfo = new HostApiInfo();
 		getHostApiInfo( index, hostApiInfo );
@@ -198,7 +198,7 @@ public class PortAudio
 	 *            HOST_API_TYPE_COREAUDIO.
 	 * @return a runtime host API index
 	 */
-	public native static int hostApiTypeIdToHostApiIndex( int hostApiType );
+	public native static int hostApiTypeIdToHostApiIndex( int hostApiType ) throws PortAudioException;
 
 	/**
 	 * @param hostApiIndex
@@ -209,13 +209,13 @@ public class PortAudio
 	 * @return standard PortAudio device index
 	 */
 	public native static int hostApiDeviceIndexToDeviceIndex( int hostApiIndex,
-			int apiDeviceIndex );
+			int apiDeviceIndex ) throws PortAudioException;
 
-	public native static int getDefaultInputDevice();
+	public native static int getDefaultInputDevice() throws PortAudioException;
 
-	public native static int getDefaultOutputDevice();
+	public native static int getDefaultOutputDevice() throws PortAudioException;
 
-	public native static int getDefaultHostApi();
+	public native static int getDefaultHostApi() throws PortAudioException;
 
 	/**
 	 * @param inputStreamParameters
@@ -228,12 +228,12 @@ public class PortAudio
 	 */
 	public native static int isFormatSupported(
 			StreamParameters inputStreamParameters,
-			StreamParameters outputStreamParameters, int sampleRate );
+			StreamParameters outputStreamParameters, int sampleRate ) throws PortAudioException;
 
 	private native static void openStream( BlockingStream blockingStream,
 			StreamParameters inputStreamParameters,
 			StreamParameters outputStreamParameters, int sampleRate,
-			int framesPerBuffer, int flags );
+			int framesPerBuffer, int flags ) throws PortAudioException;
 
 	/**
 	 * 
@@ -250,7 +250,7 @@ public class PortAudio
 	public static BlockingStream openStream(
 			StreamParameters inputStreamParameters,
 			StreamParameters outputStreamParameters, int sampleRate,
-			int framesPerBuffer, int flags )
+			int framesPerBuffer, int flags ) throws PortAudioException
 	{
 		BlockingStream blockingStream = new BlockingStream();
 		openStream( blockingStream, inputStreamParameters,
