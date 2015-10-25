@@ -4,12 +4,16 @@
 
 #include <jni.h>
 
-#include <GL3/gl3w.h>
+#ifndef GLEW_STATIC
+#define GLEW_STATIC
+#endif
+#include <GL/glew.h>
 
 #include <nanovg.h>
-//#define NANOVG_GL3_IMPLEMENTATION
 
-#define NANOVG_GL3 1
+//#define NANOVG_GL3 1
+#define NANOVG_GL2 1
+
 #define NANOVG_GL_IMPLEMENTATION 1
 #define NANOVG_GL_USE_UNIFORMBUFFER 0
 
@@ -72,13 +76,30 @@ JNIEXPORT jlong JNICALL Java_firststep_internal_NVG_test
 JNIEXPORT jlong JNICALL Java_firststep_internal_NVG_create
   (JNIEnv *e, jclass c, jint flags)
 {
+#if defined NANOVG_GL2
+	return (jlong)(NVGcontext*) nvgCreateGL2(flags);
+#elif defined NANOVG_GL3
 	return (jlong)(NVGcontext*) nvgCreateGL3(flags);
+#elif defined NANOVG_GLES2
+	return (jlong)(NVGcontext*) nvgCreateGLES2(flags);
+#elif defined NANOVG_GLES3
+	return (jlong)(NVGcontext*) nvgCreateGLES3(flags);
+#endif
+
 }
 
 JNIEXPORT void JNICALL Java_firststep_internal_NVG_delete
   (JNIEnv *e, jclass c, jlong ctx)
 {
+#if defined NANOVG_GL2
+	nvgDeleteGL2((NVGcontext*)ctx);
+#elif defined NANOVG_GL3
 	nvgDeleteGL3((NVGcontext*)ctx);
+#elif defined NANOVG_GLES2
+	nvgDeleteGLES2((NVGcontext*)ctx);
+#elif defined NANOVG_GLES3
+	nvgDeleteGLES3((NVGcontext*)ctx);
+#endif
 }
 
 JNIEXPORT void JNICALL Java_firststep_internal_NVG_beginFrame

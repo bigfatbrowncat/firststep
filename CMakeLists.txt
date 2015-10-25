@@ -46,6 +46,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/nanovg/src
 	${CMAKE_CURRENT_SOURCE_DIR}/glfw/include
 	${CMAKE_CURRENT_SOURCE_DIR}/portaudio/include
+	${CMAKE_CURRENT_SOURCE_DIR}/glew-1.13.0/include
 	${JAVA_INCLUDE_PATH}
 	${JAVA_INCLUDE_PATH2}
 )
@@ -56,7 +57,7 @@ add_library(
 	SHARED 
 	${SOURCES}
 )
-target_link_libraries(${LIBNAME} glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA_LIBS})
+target_link_libraries(${LIBNAME} glew_s glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA_LIBS})
 
 # Java code
 
@@ -94,7 +95,10 @@ IF(WIN32)
 	SET(PA_USE_WDMKS OFF CACHE BOOL  "wdmks")
 ENDIF()
 add_subdirectory("portaudio")
+add_subdirectory(glew-1.13.0/build/cmake)
+
 
 #	D2. Target dependencies
 add_dependencies(${PROJNAME} ${JARNAME})
 add_dependencies(${PROJNAME} ${LIBNAME})
+add_dependencies(${PROJNAME} glew_s)
