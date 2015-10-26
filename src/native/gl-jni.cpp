@@ -53,8 +53,18 @@ extern "C"
 {
 	JNIEXPORT jboolean JNICALL Java_firststep_internal_GL3W_init(JNIEnv * env, jclass clz)
 	{
-		//return !gl3wInit();
-		return glewInit() == GLEW_OK;
+		glewExperimental = true;		// Fixes crash on OSX
+		if (glewInit() == GLEW_OK) {
+			// We need to clear a GL_INVALID_ENUM (0x500) error
+			int err;
+			do {
+				err = glGetError();
+				if (err != 0) printf("glGetError after glewInit() returns 0x%x. Ignoring this.\n", err); fflush(stdout);
+			} while (err != 0);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	JNIEXPORT jint JNICALL Java_firststep_internal_GL3W_getGLVersionMajor(JNIEnv * env, jclass clz)

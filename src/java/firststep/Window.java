@@ -471,7 +471,7 @@ public class Window extends Framebuffer {
 				throw new RuntimeException("GL3W initialization failed");
 			}
 			gl3wInitialized = true;
-			getLogger().log(Level.INFO, "GL3W context is initialized");
+			getLogger().log(Level.INFO, "GL3W context is initialized. Version: " + GL3W.getGLVersionMajor() + "." + GL3W.getGLVersionMinor());
 		}
 
 		return glfwWindow;

@@ -20,7 +20,7 @@ SET(CMAKE_C_FLAGS "-std=gnu99")
 
 IF(APPLE)
 	SET(MACOSX_RPATH FALSE)
-    SET(EXTRA_LIBS "-framework Cocoa -framework OpenGL -framework CoreAudio -framework AudioToolbox -framework AudioUnit")
+    SET(EXTRA_LIBS "-framework Cocoa -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreVideo -framework IOKit")
 	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99")
 ELSEIF(WIN32)
 	SET(EXTRA_LIBS "-lglu32 -lopengl32 -lwinmm")
