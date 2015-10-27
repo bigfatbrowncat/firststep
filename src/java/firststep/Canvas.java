@@ -123,7 +123,7 @@ public class Canvas implements Deletable {
 	
 	public Canvas(boolean primary) {
 		if (primary) {
-			nanoVGContext = NVG.create(firststep.internal.NVG.NVG_ANTIALIAS | firststep.internal.NVG.NVG_STENCIL_STROKES | firststep.internal.NVG.NVG_DEBUG);
+			nanoVGContext = NVG.create(/*firststep.internal.NVG.NVG_ANTIALIAS | firststep.internal.NVG.NVG_STENCIL_STROKES | firststep.internal.NVG.NVG_DEBUG*/0);
 			if (nanoVGContext == 0) {
 				//GLFW.terminate();
 				throw new RuntimeException("NanoVG can't create a context for the window");

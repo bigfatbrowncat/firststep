@@ -28,4 +28,5 @@
 #cmakedefine01 PA_USE_WDMKS
 #else
 #cmakedefine01 PA_USE_COREAUDIO
+#cmakedefine01 PA_USE_ALSA
 #endif

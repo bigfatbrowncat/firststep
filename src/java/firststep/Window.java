@@ -453,8 +453,8 @@ public class Window extends Framebuffer {
 		} else {
 			// On other platforms OpenGL 3.0 is sufficient for us.
 			
-			GLFW.windowHint(GLFW.CONTEXT_VERSION_MAJOR, 3);
-			GLFW.windowHint(GLFW.CONTEXT_VERSION_MINOR, 0);			
+			GLFW.windowHint(GLFW.CONTEXT_VERSION_MAJOR, 2);
+			GLFW.windowHint(GLFW.CONTEXT_VERSION_MINOR, 1);			
 		}
 
 		long glfwWindow = GLFW.createWindow(width, height, title, 0, 0);

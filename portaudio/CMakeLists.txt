@@ -89,6 +89,8 @@ IF(PA_USE_DIRECTSOUNDFULLDUPLEXCREATE)
 ADD_DEFINITIONS(-DPAWIN_USE_DIRECTSOUNDFULLDUPLEXCREATE)
 ENDIF(PA_USE_DIRECTSOUNDFULLDUPLEXCREATE)
 
+ADD_DEFINITIONS(-DPA_LITTLE_ENDIAN)
+
 #######################################
 IF(WIN32)
 INCLUDE_DIRECTORIES(src/os/win)
@@ -187,27 +189,48 @@ SOURCE_GROUP("hostapi\\wdmks" FILES
 )
 ENDIF(PA_USE_WDMKS)
 
-IF(APPLE)
-SET(PA_USE_COREAUDIO ON CACHE BOOL "coreaudio")
+IF (WIN32)
 
-IF(PA_USE_COREAUDIO)
+ELSEIF(APPLE)
+	SET(PA_USE_COREAUDIO ON CACHE BOOL "coreaudio")
 
-SET(PA_COREAUDIO_INCLUDES
-  include/pa_mac_core.h
-)
+	IF (PA_USE_COREAUDIO)
 
-SET(PA_COREAUDIO_SOURCES
-  src/hostapi/coreaudio/pa_mac_core_blocking.c
-  src/hostapi/coreaudio/pa_mac_core_utilities.c
-  src/hostapi/coreaudio/pa_mac_core.c
-)
+		SET(PA_COREAUDIO_INCLUDES
+		  include/pa_mac_core.h
+		)
 
-SOURCE_GROUP("hostapi/coreaudio" FILES
-  ${PA_COREAUDIO_SOURCES}
-)
+		SET(PA_COREAUDIO_SOURCES
+		  src/hostapi/coreaudio/pa_mac_core_blocking.c
+		  src/hostapi/coreaudio/pa_mac_core_utilities.c
+		  src/hostapi/coreaudio/pa_mac_core.c
+		)
 
-ENDIF(PA_USE_COREAUDIO)
-ENDIF(APPLE)
+		SOURCE_GROUP("hostapi/coreaudio" FILES
+		  ${PA_COREAUDIO_SOURCES}
+		)
+
+	ENDIF (PA_USE_COREAUDIO)
+ELSE()
+	SET(PA_USE_ALSA ON CACHE BOOL "alsa")
+
+	IF (PA_USE_ALSA)
+
+		SET(PA_ALSA_INCLUDES
+		  include/pa_linux_alsa.h
+		)
+
+		SET(PA_ALSA_SOURCES
+		  src/hostapi/alsa/pa_linux_alsa.c
+		)
+
+		SOURCE_GROUP("hostapi/alsa" FILES
+		  ${PA_ALSA_SOURCES}
+		)
+
+	ENDIF ()
+ENDIF()
+
 
 SET(PA_SKELETON_SOURCES
   src/hostapi/skeleton/pa_hostapi_skeleton.c
@@ -226,16 +249,17 @@ SET(PA_INCLUDES
   ${PA_WASAPI_INCLUDES}
   ${PA_WDMKS_INCLUDES}
 )
-ELSE(WIN32)
-IF(APPLE)
-SET(PA_INCLUDES 
-  include/portaudio.h
-  ${PA_COREAUDIO_INCLUDES}
-)
-ELSE(APPLE)
-# Not implemented
-ENDIF(APPLE)
-ENDIF(WIN32)
+ELSEIF(APPLE)
+	SET(PA_INCLUDES 
+	  include/portaudio.h
+	  ${PA_COREAUDIO_INCLUDES}
+	)
+ELSE ()
+	SET(PA_INCLUDES 
+	  include/portaudio.h
+	  ${PA_ALSA_INCLUDES}
+	)
+ENDIF ()
 
 SOURCE_GROUP("include" FILES
   ${PA_INCLUDES}
@@ -306,6 +330,8 @@ ELSE (WIN32)
 	SOURCE_GROUP("os/unix" FILES
 	  ${PA_PLATFORM_SOURCES}
 	)
+	
+	INCLUDE_DIRECTORIES( src/os/unix )
 
 ENDIF(WIN32)
 
@@ -329,6 +355,7 @@ SET(SOURCES_LESS_ASIO_SDK
   ${PA_SKELETON_SOURCES}
   ${PA_PLATFORM_SOURCES}
   ${PA_COREAUDIO_SOURCES}
+  ${PA_ALSA_SOURCES}
 )
 
 IF(PA_UNICODE_BUILD)
