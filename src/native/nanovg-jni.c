@@ -11,8 +11,9 @@
 
 #include <nanovg.h>
 
+// Moved to CMakeLists.txt
 //#define NANOVG_GL3 1
-#define NANOVG_GL2 1
+//#define NANOVG_GL2 1
 
 #define NANOVG_GL_IMPLEMENTATION 1
 #define NANOVG_GL_USE_UNIFORMBUFFER 0
