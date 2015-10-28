@@ -1,7 +1,7 @@
 #ifndef GL_HEADER_H
 #define GL_HEADER_H
 
-#if defined USE_GLEW_GL3		// Defined in CMakeLists.txt
+#ifdef USE_GLEW_GL3		// Defined in CMakeLists.txt
 
 	#ifndef GLEW_STATIC
 	#define GLEW_STATIC
@@ -13,11 +13,15 @@
 	// Solves problem with some old Intel chipsets
 	#define NANOVG_GL_USE_UNIFORMBUFFER 0	
 
-#else if defined USE_EGL_GLES2		// Defined in CMakeLists.txt
+#else
+	#if defined USE_EGL_GLES2		// Defined in CMakeLists.txt
 
-	#define GLFW_INCLUDE_ES2
-	#define NANOVG_GLES2 1
+		#define GLFW_INCLUDE_ES2
+		#define NANOVG_GLES2 1
 
+	#else
+		#error "You dhould define either USE_GLEW_GL3 or USE_EGL_GLES2"
+	#endif
 #endif
 
 #include <GLFW/glfw3.h>

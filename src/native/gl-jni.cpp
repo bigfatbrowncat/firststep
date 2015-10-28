@@ -50,8 +50,8 @@ extern "C"
 {
 	JNIEXPORT jboolean JNICALL Java_firststep_internal_GL3W_init(JNIEnv * env, jclass clz)
 	{
-		printf("no glew here\n");
-		/*glewExperimental = true;		// Fixes crash on OSX
+#ifdef USE_GLEW_GL3
+		glewExperimental = true;		// Fixes crash on OSX
 		if (glewInit() == GLEW_OK) {
 			// We need to clear a GL_INVALID_ENUM (0x500) error
 			int err;
@@ -62,8 +62,14 @@ extern "C"
 			return true;
 		} else {
 			return false;
-		}*/
+		}
+#else 
+	#if defined USE_EGL_GLES2
 		return true;
+	#else
+		#error "You dhould define either USE_GLEW_GL3 or USE_EGL_GLES2"
+	#endif
+#endif
 	}
 
 	JNIEXPORT jint JNICALL Java_firststep_internal_GL3W_getGLVersionMajor(JNIEnv * env, jclass clz)
