@@ -1,12 +1,6 @@
 #include <jni.h>
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-#include <GL/glew.h>
-
-//#define GLFW_INCLUDE_GLCOREARB
-#include <GLFW/glfw3.h>
+#include "gl-header.h"
 
 static jmethodID errorId = 0;
 static jmethodID monitorId = 0;

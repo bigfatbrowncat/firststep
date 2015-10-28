@@ -4,20 +4,7 @@
 
 #include <jni.h>
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-#include <GL/glew.h>
-
-#include <nanovg.h>
-
-// Moved to CMakeLists.txt
-//#define NANOVG_GL3 1
-//#define NANOVG_GL2 1
-
-#define NANOVG_GL_IMPLEMENTATION 1
-#define NANOVG_GL_USE_UNIFORMBUFFER 0
-
+#include "gl-header.h"
 #include <nanovg_gl.h>
 #include <nanovg_gl_utils.h>
 

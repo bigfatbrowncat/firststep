@@ -1,10 +1,7 @@
 #include <jni.h>
 #include <string.h>
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-#include <GL/glew.h>
+#include "gl-header.h"
 
 void getGLVersion(int *major, int *minor)
 {
@@ -53,7 +50,8 @@ extern "C"
 {
 	JNIEXPORT jboolean JNICALL Java_firststep_internal_GL3W_init(JNIEnv * env, jclass clz)
 	{
-		glewExperimental = true;		// Fixes crash on OSX
+		printf("no glew here\n");
+		/*glewExperimental = true;		// Fixes crash on OSX
 		if (glewInit() == GLEW_OK) {
 			// We need to clear a GL_INVALID_ENUM (0x500) error
 			int err;
@@ -64,7 +62,8 @@ extern "C"
 			return true;
 		} else {
 			return false;
-		}
+		}*/
+		return true;
 	}
 
 	JNIEXPORT jint JNICALL Java_firststep_internal_GL3W_getGLVersionMajor(JNIEnv * env, jclass clz)

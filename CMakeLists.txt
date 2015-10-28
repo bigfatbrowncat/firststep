@@ -21,17 +21,19 @@ SET(CMAKE_CXX_FLAGS "-fPIC")
 
 IF(APPLE)
 	SET(MACOSX_RPATH FALSE)
-    SET(EXTRA_LIBS "-framework Cocoa -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreVideo -framework IOKit")
+	SET(EXTRA_LIBS "-framework Cocoa -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreVideo -framework IOKit")
 	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99")
-	add_definitions( -DNANOVG_GL3=1 )
+	add_definitions( -DUSE_GLEW_GL3 )
 ELSEIF(WIN32)
 	SET(EXTRA_LIBS "-lglu32 -lopengl32 -lwinmm")
 	SET(CMAKE_EXE_LINKER_FLAGS "-std=gnu99 -static -static-libgcc -static-libstdc++ -mwindows")
 	SET(CMAKE_SHARED_LINKER_FLAGS "-std=gnu99 -static -static-libgcc -static-libstdc++ -mwindows")
-	add_definitions( -DNANOVG_GL3=1 )
+	add_definitions( -DUSE_GLEW_GL3 )
 ELSE()
-	SET(EXTRA_LIBS "-lasound")
-	add_definitions( -DNANOVG_GL2=1 )
+	SET(GLFW_USE_EGL ON)
+	SET(GLFW_CLIENT_LIBRARY "glesv2")
+	SET(EXTRA_LIBS "-lasound -lXrandr -lXi -lXinerama -lXcursor -lEGL")
+	add_definitions( -DUSE_EGL_GLES2 )
 ENDIF()
 
 #	N3. Sources
@@ -63,7 +65,14 @@ add_library(
 	SHARED 
 	${SOURCES}
 )
-target_link_libraries(${LIBNAME} glew_s glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA_LIBS})
+IF(APPLE)
+	target_link_libraries(${LIBNAME} glew_s glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA_LIBS})
+ELSEIF(WIN32)
+	target_link_libraries(${LIBNAME} glew_s glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA_LIBS})
+ELSE()
+	target_link_libraries(${LIBNAME} glfw portaudio_static ${GLFW_LIBRARIES} ${EXTRA_LIBS})
+	# No GLEW with GLES 
+ENDIF()
 
 # Java code
 
@@ -100,11 +109,24 @@ IF(WIN32)
 	SET(PA_USE_WASAPI OFF CACHE BOOL "wasapi")
 	SET(PA_USE_WDMKS OFF CACHE BOOL  "wdmks")
 ENDIF()
-add_subdirectory("portaudio")
-add_subdirectory(glew-1.13.0/build/cmake)
 
+IF(APPLE)
+	add_subdirectory(glew-1.13.0/build/cmake)
+ELSEIF(WIN32)
+	add_subdirectory(glew-1.13.0/build/cmake)
+ELSE()
+	# No GLEW with GLES 
+ENDIF()
+add_subdirectory("portaudio")
 
 #	D2. Target dependencies
 add_dependencies(${PROJNAME} ${JARNAME})
 add_dependencies(${PROJNAME} ${LIBNAME})
-add_dependencies(${PROJNAME} glew_s)
+IF(APPLE)
+	add_dependencies(${PROJNAME} glew_s)
+ELSEIF(WIN32)
+	add_dependencies(${PROJNAME} glew_s)
+ELSE()
+	# No GLEW with GLES 
+ENDIF()
+
