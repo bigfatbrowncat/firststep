@@ -524,6 +524,22 @@ JNIEXPORT void JNICALL Java_firststep_internal_NVG_textLineHeight
 	nvgTextLineHeight((NVGcontext*)ctx, lineHeight);
 }
 
+JNIEXPORT jfloatArray JNICALL Java_firststep_internal_NVG_textBounds
+  (JNIEnv *e, jclass c, jlong ctx, jfloat x, jfloat y, jstring string, jint count)
+{
+	float cbounds[4];
+
+	const char* cstr = (*e)->GetStringUTFChars(e, string, NULL);
+	nvgTextBounds((NVGcontext*)ctx, x, y, cstr, cstr + count, cbounds);
+	jfloatArray res = (*e)->NewFloatArray(e, 4);
+	(*e)->SetFloatArrayRegion(e, res, 0, 4, cbounds);
+
+	(*e)->ReleaseStringUTFChars(e, string, cstr);
+
+	return res;
+}
+
+
 JNIEXPORT jint JNICALL Java_firststep_internal_NVG_findFont
   (JNIEnv *e, jclass c, jlong ctx, jstring jname)
 {

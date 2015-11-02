@@ -109,6 +109,22 @@ public class Canvas implements Deletable {
 		}
 	}
 	
+	/**
+	 * Simple container for bounding coordinates
+	 */
+	public static class Bounds {
+		public final float xmin, ymin, xmax, ymax;
+
+		public Bounds(float xmin, float ymin, float xmax, float ymax) {
+			this.xmin = xmin;
+			this.ymin = ymin;
+			this.xmax = xmax;
+			this.ymax = ymax;
+		}
+		
+	}
+	
+	
 	private static Logger getLogger() {
 		return Logger.getLogger(Window.class.getName(), null);
 	}
@@ -356,6 +372,20 @@ public class Canvas implements Deletable {
 
 	public void textLineHeight(float lineHeight) {
 		NVG.textLineHeight(nanoVGContext, lineHeight);
+	}
+
+	public Bounds textBounds(float x, float y, String string, int length) {
+		float[] bs = NVG.textBounds(nanoVGContext, x, y, string, length);
+		return new Bounds(bs[0], bs[1], bs[2], bs[3]);
+	}
+	
+	public Bounds textBounds(float x, float y, String string) {
+		return textBounds(x, y, string, string.length());
+	}
+
+	public FloatXY textSize(String string) {
+		Bounds b = textBounds(0, 0, string, string.length());
+		return new FloatXY(b.xmax - b.xmin, b.ymax - b.ymin);
 	}
 
 	public void fontFace(Font font) {

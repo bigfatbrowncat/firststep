@@ -97,11 +97,11 @@ public class Framebuffer extends Canvas {
 		// Opening the new one
 		IntXY fboSize = new IntXY(width, height);
 
-		int winWidth = (int)(fboSize.getX() / pxRatio);
-		int winHeight = (int)(fboSize.getY() / pxRatio);
+		int winWidth = (int)(fboSize.x / pxRatio);
+		int winHeight = (int)(fboSize.y / pxRatio);
 
 		NVG.bindFramebuffer(idHolder.id);
-		GL3W.glViewport(0, 0, fboSize.getX(), fboSize.getY());
+		GL3W.glViewport(0, 0, fboSize.x, fboSize.y);
 		if (background != null) {
 			GL3W.glClearColor(background.getRed(), background.getGreen(), background.getBlue(), background.getAlpha());
 			GL3W.glClear(GL3W.GL_COLOR_BUFFER_BIT | GL3W.GL_STENCIL_BUFFER_BIT | GL3W.GL_DEPTH_BUFFER_BIT);
@@ -148,10 +148,10 @@ public class Framebuffer extends Canvas {
 			NVG.bindFramebuffer(prev.idHolder.id);
 			IntXY fboSize = new IntXY(prev.width, prev.height);
 			if (prev.idHolder.id == 0) {
-				GL3W.glViewport(0, 0, fboSize.getX(), fboSize.getY());
+				GL3W.glViewport(0, 0, fboSize.x, fboSize.y);
 			}
-			int winWidth = (int)(fboSize.getX() / pxRatio);
-			int winHeight = (int)(fboSize.getY() / pxRatio);
+			int winWidth = (int)(fboSize.x / pxRatio);
+			int winHeight = (int)(fboSize.y / pxRatio);
 			NVG.beginFrame(nanoVGContext, winWidth, winHeight, pxRatio);
 		}
 	}

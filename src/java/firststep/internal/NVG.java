@@ -394,6 +394,9 @@ public class NVG {
 	public static native void textLetterSpacing(long ctx, float spacing);
 
 	public static native void textLineHeight(long ctx, float lineHeight);
+	
+	//float nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);
+	public static native float[] textBounds(long ctx, float x, float y, String string, int count);
 
 	public static native int findFont(long ctx, String name);
 
