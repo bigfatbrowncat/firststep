@@ -6,7 +6,7 @@ static jmethodID errorId = 0;
 static jmethodID monitorId = 0;
 static jmethodID windowPosId = 0;
 static jmethodID windowSizeId = 0;
-static jmethodID windowCloseId = 0;
+static jmethodID windowCloseAskedId = 0;
 static jmethodID windowRefreshId = 0;
 static jmethodID windowFocusId = 0;
 static jmethodID windowIconifyId = 0;
@@ -89,7 +89,10 @@ extern "C"
 
 	void windowClose(GLFWwindow* window) {
 		if(callback) {
-			getEnv()->CallVoidMethod(callback, windowCloseId, (jlong)window);
+			jboolean res = getEnv()->CallBooleanMethod(callback, windowCloseAskedId, (jlong)window);
+			if (res == false) {
+				glfwSetWindowShouldClose(window, false);
+			}
 		}
 	}
 
@@ -186,13 +189,13 @@ extern "C"
 
 		windowSizeId = env->GetMethodID(callbackClass, "windowSize", "(JII)V");
 		if(!windowSizeId) {
-			env->ThrowNew(exception, "Couldn't find windowSizeId() method");
+			env->ThrowNew(exception, "Couldn't find windowSize() method");
 			return false;
 		}
 
-		windowCloseId = env->GetMethodID(callbackClass, "windowClose", "(J)V");
-		if(!windowCloseId) {
-			env->ThrowNew(exception, "Couldn't find windowCloseId() method");
+		windowCloseAskedId = env->GetMethodID(callbackClass, "windowCloseAsked", "(J)Z");
+		if(!windowCloseAskedId) {
+			env->ThrowNew(exception, "Couldn't find windowCloseAsked() method");
 			return false;
 		}
 

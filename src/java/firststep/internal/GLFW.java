@@ -49,7 +49,7 @@ public class GLFW {
 		 * @param window the window handle
 		 * @return whether to allow closing the window
 		 */
-		public void windowClose(long window);
+		public boolean windowCloseAsked(long window);
 		
 		/**
 		 * Called when the window content needs to be refreshed
@@ -137,7 +137,8 @@ public class GLFW {
 		}
 
 		@Override
-		public void windowClose(long window) {
+		public boolean windowCloseAsked(long window) {
+			return true;
 		}
 
 		@Override

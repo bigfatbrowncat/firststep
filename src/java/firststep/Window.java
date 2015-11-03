@@ -317,8 +317,8 @@ public class Window extends Framebuffer {
 		}
 		
 		@Override
-		public void windowClose(long window) {
-			openedWindows.get(window).onClose();
+		public boolean windowCloseAsked(long window) {
+			return openedWindows.get(window).onCloseAsked();
 		}
 		
 		@Override
@@ -498,8 +498,11 @@ public class Window extends Framebuffer {
 		GLFW.makeContextCurrent(glfwWindow);
 		
 		beginDrawing();
-		onFrame();
-		endDrawing();
+		try {
+			onFrame();
+		} finally {
+			endDrawing();
+		}
 		
 		/*int fbWidth = width;	// TODO FramebufferSize
 		int fbHeight = height;	// TODO FramebufferSize
@@ -510,7 +513,7 @@ public class Window extends Framebuffer {
         GLFW.swapBuffers(glfwWindow);
 	}
 
-	public void close() {
+	public void askClose() {
 		GLFW.setWindowShouldClose(glfwWindow, 1);
 	}
 	
@@ -566,8 +569,8 @@ public class Window extends Framebuffer {
 		
 	}
 	
-	public void onClose() {
-		
+	public boolean onCloseAsked() {
+		return true;
 	}
 	
 	public void onScroll(double scrollX, double scrollY) {
