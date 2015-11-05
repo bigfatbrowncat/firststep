@@ -500,6 +500,9 @@ public class Window extends Framebuffer {
 		beginDrawing();
 		try {
 			onFrame();
+		} catch (Exception e) {
+			getLogger().log(Level.SEVERE, "Exception " + e.getClass() + " occured during UI event loop: " + e.getMessage());
+			e.printStackTrace(System.err);
 		} finally {
 			endDrawing();
 		}
